@@ -1,14 +1,15 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
+
 import 'package:dio/adapter.dart';
+import 'package:dio/dio.dart';
 
 class MyAdapter extends HttpClientAdapter {
-  DefaultHttpClientAdapter _adapter = DefaultHttpClientAdapter();
+  final DefaultHttpClientAdapter _adapter = DefaultHttpClientAdapter();
 
   @override
   Future<ResponseBody> fetch(RequestOptions options,
-      Stream<List<int>> requestStream, Future cancelFuture) async {
-    Uri uri = options.uri;
+      Stream<List<int>> requestStream, Future? cancelFuture) async {
+    final uri = options.uri;
     // hook requests to  google.com
     if (uri.host == "google.com") {
       return ResponseBody.fromString("Too young too simple!", 200);
@@ -22,11 +23,11 @@ class MyAdapter extends HttpClientAdapter {
   }
 }
 
-main() async {
-  var dio = Dio();
+void main() async {
+  final dio = Dio();
   dio.httpClientAdapter = MyAdapter();
-  Response response = await dio.get("https://google.com");
+  var response = await dio.get("https://google.com");
   print(response);
-  response = await dio.get("https://baidu.com");
+  response = await dio.get("https://google.com");
   print(response);
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 // In this example we download a image and listen the downloading progress.
@@ -12,7 +13,7 @@ main() async {
   var url =
       "https://cdn.jsdelivr.net/gh/flutterchina/flutter-in-action@1.0/docs/imgs/book.jpg";
 
-  // var url = "https://www.baidu.com/img/bdlogo.gif";
+  // var url = "https://www.google.com/img/bdlogo.gif";
   await download1(dio, url, "./example/book.jpg");
   await download1(dio, url, (Headers headers) => "./example/book1.jpg");
   await download2(dio, url, "./example/book2.jpg");

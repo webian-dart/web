@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:dio/dio.dart';
 
 /// If the request data is a `List` type, the [DefaultTransformer] will send data
@@ -27,16 +28,16 @@ class MyTransformer extends DefaultTransformer {
   }
 }
 
-main() async {
+void main() async {
   var dio = Dio();
   // Use custom Transformer
   dio.transformer = MyTransformer();
 
-  Response response = await dio.get("https://www.baidu.com");
-  print(response.request.extra["self"]);
+  final response = await dio.get("https://www.google.com");
+  print(response.request!.extra["self"]);
 
   try {
-    await dio.post("https://www.baidu.com", data: ["1", "2"]);
+    await dio.post("https://www.google.com", data: ["1", "2"]);
   } catch (e) {
     print(e);
   }

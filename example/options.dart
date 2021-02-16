@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 main() async {
@@ -43,7 +44,7 @@ main() async {
 
   response = await dio.request(
     "/",
-    options: RequestOptions(baseUrl: "https://baidu.com"),
+    options: RequestOptions(baseUrl: "https://google.com"),
   );
   print(response.data);
 }

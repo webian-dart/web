@@ -1,18 +1,19 @@
 import 'dart:convert';
 
-//import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
+
 import 'http.dart'; // make dio as global top-level variable
 import 'routes/request.dart';
 
 // Must be top-level function
-_parseAndDecode(String response) {
+void _parseAndDecode(String response) {
   return jsonDecode(response);
 }
 
-parseJson(String text) {
+Future parseJson(String text) {
   return compute(_parseAndDecode, text);
 }
 
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title = ""}) : super(key: key);
 
   final String title;
 
@@ -76,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   .then((r) {
                 setState(() {
                   print(r.data);
-                  _text = r.data.replaceAll(RegExp(r"\s"), "");
+                  _text = r.data?.replaceAll(RegExp(r"\s"), "") ?? "";
                 });
               }).catchError(print);
             },

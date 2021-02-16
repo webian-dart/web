@@ -6,7 +6,7 @@ class _ConnectionManager implements ConnectionManager {
   ///
   /// We can set trusted certificates and handler
   /// for unverifiable certificates.
-  final void Function(Uri uri, ClientSetting) onClientCreate;
+  final void Function(Uri uri, ClientSetting)? onClientCreate;
 
   /// Sets the idle timeout(milliseconds) of non-active persistent
   /// connections. For the sake of socket reuse feature with http/2,
@@ -23,17 +23,18 @@ class _ConnectionManager implements ConnectionManager {
   bool _closed = false;
   bool _forceClosed = false;
 
-  _ConnectionManager({int idleTimeout, this.onClientCreate})
+  _ConnectionManager({int? idleTimeout, this.onClientCreate})
       : this._idleTimeout = idleTimeout ?? 1000;
 
   @override
   Future<ClientTransportConnection> getConnection(
       RequestOptions options) async {
-    if (_closed)
+    if (_closed) {
       throw Exception(
           "Can't establish connection after [ConnectionManager] closed!");
-    Uri uri = options.uri;
-    String domain = "${uri.host}:${uri.port}";
+    }
+    final uri = options.uri;
+    final domain = "${uri.host}:${uri.port}";
     var transportState = _transportsMap[domain];
     if (transportState == null) {
       var _initFuture = _connectFutures[domain];
@@ -59,21 +60,19 @@ class _ConnectionManager implements ConnectionManager {
 
   Future<_ClientTransportConnectionState> _connect(
       RequestOptions options) async {
-    Uri uri = options.uri;
-    String domain = "${uri.host}:${uri.port}";
-    ClientSetting clientConfig = ClientSetting();
-    if (onClientCreate != null) {
-      onClientCreate(uri, clientConfig);
-    }
+    final uri = options.uri;
+    final domain = "${uri.host}:${uri.port}";
+    final clientConfig = ClientSetting();
+    onClientCreate?.call(uri, clientConfig);
     var socket;
     try {
       // Create socket
+      final connectTimeout = options.connectTimeout ?? 0;
       socket = await SecureSocket.connect(
         uri.host,
         uri.port,
-        timeout: options.connectTimeout > 0
-            ? Duration(milliseconds: options.connectTimeout)
-            : null,
+        timeout:
+            connectTimeout > 0 ? Duration(milliseconds: connectTimeout) : null,
         context: clientConfig.context,
         onBadCertificate: clientConfig.onBadCertificate,
         supportedProtocols: ['h2'],
@@ -113,7 +112,7 @@ class _ConnectionManager implements ConnectionManager {
 
   @override
   void removeConnection(ClientTransportConnection transport) {
-    _ClientTransportConnectionState _transportState;
+    _ClientTransportConnectionState? _transportState;
     _transportsMap.removeWhere((_, state) {
       if (state.transport == transport) {
         _transportState = state;
@@ -146,8 +145,8 @@ class _ClientTransportConnectionState {
   }
 
   bool isActive = true;
-  int latestIdleTimeStamp;
-  Timer _timer;
+  int latestIdleTimeStamp = 0;
+  Timer? _timer;
 
   void delayClose(int idleTimeout, void Function() callback) {
     idleTimeout = idleTimeout < 100 ? 100 : idleTimeout;
@@ -162,7 +161,7 @@ class _ClientTransportConnectionState {
   void _startTimer(void Function() callback, int duration, int idleTimeout) {
     _timer = Timer(Duration(milliseconds: duration), () {
       if (!isActive) {
-        int interval =
+        final interval =
             DateTime.now().millisecondsSinceEpoch - latestIdleTimeStamp;
         if (interval >= duration) {
           return callback();
