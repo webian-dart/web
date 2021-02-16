@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+
 import '../adapter.dart';
+import '../adapters/default_http_client_adapter.dart';
 import '../cancel_token.dart';
-import '../response.dart';
 import '../dio.dart';
+import '../dio_error.dart';
 import '../headers.dart';
 import '../options.dart';
-import '../dio_error.dart';
-import '../adapters/io_adapter.dart';
+import '../response.dart';
 
 Dio createDio([BaseOptions? options]) => DioForNative(options);
 
