@@ -6,9 +6,9 @@ This project is a fork of Dio for my own usage.
 
 This fork's goals are:
 
-1 - Complete any missing nullsafety upgrade on plugins.
-2 - Bring Cookie jar in
-3 - Refactor code applying Clean Code principles.
+1. - Complete any missing nullsafety upgrade on plugins.
+2. - Bring Cookie jar in
+3. - Refactor code applying Clean Code principles.
 
 - So in essence, not to change or add functionality but continue the upgrade started by/in https://github.com/harsimranmaan/dio on nullsafety branch.
 
