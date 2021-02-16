@@ -1,6 +1,21 @@
 Language: [English](README.md) | [中文简体](README-ZH.md)
 
-# dio
+# webian
+
+This project is a fork of Dio for my own usage.
+
+This fork's goals are:
+
+1 - Complete any missing nullsafety upgrade on plugins.
+2 - Bring Cookie jar in
+3 - Refactor code applying Clean Code principles.
+
+- So in essence, not to change or add functionality but continue the upgrade started by/in https://github.com/harsimranmaan/dio on nullsafety branch.
+
+
+/////////////
+Following text is as on Dio project at the time of forking.
+////////////
 
 [![build status](https://img.shields.io/travis/flutterchina/dio/vm.svg?style=flat-square)](https://travis-ci.org/flutterchina/dio)
 [![Pub](https://img.shields.io/pub/v/dio.svg?style=flat-square)](https://pub.dartlang.org/packages/dio)
