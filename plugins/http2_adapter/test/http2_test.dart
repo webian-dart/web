@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:test/test.dart';
 import 'package:dio_http2_adapter/dio_http2_adapter.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('adds one to input values', () async {
     var dio = Dio()
-      ..options.baseUrl = "https://www.ustc.edu.cn/"
+      ..options.baseUrl = "https://www.google.com/"
       ..interceptors.add(LogInterceptor())
       ..httpClientAdapter = Http2Adapter(
         ConnectionManager(

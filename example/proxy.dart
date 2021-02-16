@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+
 import 'package:dio/adapter.dart';
+import 'package:dio/dio.dart';
 
 main() async {
   var dio = Dio();
@@ -21,8 +22,8 @@ main() async {
   await dir.create();
   Response<String> response;
   //response= await dio.get("https://github.com/wendux/fly");
-  response = await dio.get("https://www.baidu.com");
+  response = await dio.get("https://www.google.com");
   print(response.statusCode);
-  response = await dio.get("https://www.baidu.com");
+  response = await dio.get("https://www.google.com");
   print(response.statusCode);
 }

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-main() async {
-  Dio dio = Dio(
+void main() async {
+  final dio = Dio(
     BaseOptions(
       baseUrl: "http://httpbin.org/",
       method: "GET",
@@ -24,17 +24,17 @@ main() async {
       await dio.get("/get", options: Options(responseType: ResponseType.plain));
   print(response.data is String);
 
-  // the content of "https://baidu.com" is a html file, So it can't be convert to Map type,
+  // the content of "https://google.com" is a html file, So it can't be convert to Map type,
   // it will cause a FormatException.
-  response = await dio.get<Map>("https://baidu.com").catchError(print);
+  response = await dio.get<Map>("https://google.com").catchError(print);
 
   // This works well.
-  response = await dio.get("https://baidu.com");
+  response = await dio.get("https://google.com");
   print("done");
   // This works well too.
-  response = await dio.get<String>("https://baidu.com");
+  response = await dio.get<String>("https://google.com");
   print("done");
   // This is the recommended way.
-  var r = await dio.get<String>("https://baidu.com");
-  print(r.data.length);
+  var r = await dio.get<String>("https://google.com");
+  print(r.data!.length);
 }

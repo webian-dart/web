@@ -1,14 +1,15 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 
-main() async {
+void main() async {
   var dio = Dio();
   dio.options
     ..baseUrl = "http://httpbin.org/"
     ..connectTimeout = 5000 //5s
     ..receiveTimeout = 5000
-    ..validateStatus = (int status) {
-      return status > 0;
+    ..validateStatus = (int? status) {
+      return (status ?? 0) > 0;
     }
     ..headers = {
       HttpHeaders.userAgentHeader: 'dio',

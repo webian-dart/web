@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-main() async {
-  Dio dio = Dio();
+void main() async {
+  final dio = Dio();
   dio.options.baseUrl = "http://httpbin.org/";
   dio.options.connectTimeout = 5000;
   dio.interceptors
@@ -45,6 +45,6 @@ main() async {
   try {
     await dio.get("xsddddd");
   } on DioError catch (e) {
-    assert(e.response.statusCode == 404);
+    assert(e.response!.statusCode == 404);
   }
 }

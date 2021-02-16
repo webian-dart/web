@@ -2,35 +2,34 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:http2/http2.dart';
-import 'package:dio/dio.dart';
 
-part 'connection_manager.dart';
+import 'package:dio/dio.dart';
+import 'package:http2/http2.dart';
 
 part 'client_setting.dart';
-
+part 'connection_manager.dart';
 part 'connection_manager_imp.dart';
 
 /// A Dio HttpAdapter which implements Http/2.0.
 class Http2Adapter extends HttpClientAdapter {
   final ConnectionManager _connectionMgr;
 
-  Http2Adapter(ConnectionManager connectionManager)
+  Http2Adapter(ConnectionManager? connectionManager)
       : this._connectionMgr = connectionManager ?? ConnectionManager();
 
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
     Stream<List<int>> requestStream,
-    Future cancelFuture,
+    Future? cancelFuture,
   ) async {
-    var transport = await _connectionMgr.getConnection(options);
-    var uri = options.uri;
+    final transport = await _connectionMgr.getConnection(options);
+    final uri = options.uri;
     var path = uri.path;
     if (uri.query.trim().isNotEmpty) path += ("?" + uri.query);
     if (!path.startsWith("/")) path = "/" + path;
     var headers = [
-      Header.ascii(':method', options.method),
+      Header.ascii(':method', options.method ?? ""),
       Header.ascii(':path', path),
       Header.ascii(':scheme', uri.scheme),
       Header.ascii(':authority', uri.host),
@@ -57,8 +56,8 @@ class Http2Adapter extends HttpClientAdapter {
         ?.asFuture();
     await stream.outgoingMessages.close();
     var sc = StreamController<Uint8List>();
-    Headers responseHeaders = Headers();
-    Completer completer = Completer();
+    final responseHeaders = Headers();
+    final completer = Completer();
     stream.incomingMessages.listen(
       (message) {
         if (message is HeadersStreamMessage) {
@@ -75,8 +74,9 @@ class Http2Adapter extends HttpClientAdapter {
       onDone: () => sc.close(),
       onError: (e) {
         // If connection is being forcefully terminated, remove the connection
-        if (e is TransportConnectionException)
+        if (e is TransportConnectionException) {
           _connectionMgr.removeConnection(transport);
+        }
 
         if (!completer.isCompleted) {
           completer.completeError(e, StackTrace.current);
@@ -91,7 +91,7 @@ class Http2Adapter extends HttpClientAdapter {
     responseHeaders.removeAll(":status");
     return ResponseBody(
       sc.stream,
-      int.parse(status),
+      int.parse(status ?? ""),
       headers: responseHeaders.map,
     );
   }

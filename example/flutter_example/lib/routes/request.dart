@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../http.dart';
 
 class RequestRoute extends StatefulWidget {
@@ -22,7 +23,7 @@ class _RequestRouteState extends State<RequestRoute> {
             onPressed: () {
               dio.get<String>("http://httpbin.org/get").then((r) {
                 setState(() {
-                  _text = r.data;
+                  _text = r.data ?? "";
                 });
               });
             },
