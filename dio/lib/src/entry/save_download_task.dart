@@ -4,7 +4,7 @@ import 'dart:io';
 import '../../dio.dart';
 
 class SaveDownloadTask {
-  final String savePath;
+  final dynamic savePath;
   final String lengthHeader;
   final ProgressCallback? onProgress;
   final CancelToken? cancelToken;
@@ -68,7 +68,7 @@ class SaveDownloadTask {
           received += data.length;
           onProgress?.call(received, total);
           raf = _raf;
-          if (cancelToken?.isCancelled == false) {
+          if (cancelToken == null || cancelToken?.isCancelled == false) {
             subscription.resume();
           }
         }).catchError((err) async {
