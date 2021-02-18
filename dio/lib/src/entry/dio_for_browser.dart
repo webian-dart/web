@@ -1,6 +1,6 @@
-import '../options.dart';
+import '../adapters/browser_http_client_adapter.dart';
 import '../dio.dart';
-import '../adapters/browser_adapter.dart';
+import '../options.dart';
 
 Dio createDio([BaseOptions? options]) => DioForBrowser(options);
 

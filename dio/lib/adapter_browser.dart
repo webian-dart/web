@@ -1,1 +1,2 @@
-export 'src/adapters/browser_adapter.dart' show BrowserHttpClientAdapter;
+export 'src/adapters/browser_http_client_adapter.dart'
+    show BrowserHttpClientAdapter;

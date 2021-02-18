@@ -1,7 +1,7 @@
 import 'adapter.dart';
+import 'cancel_token.dart';
 import 'headers.dart';
 import 'transformer.dart';
-import 'cancel_token.dart';
 
 /// Callback to listen the progress for sending/receiving data.
 ///
@@ -331,6 +331,8 @@ class RequestOptions extends Options {
 
   int? connectTimeout;
 }
+
+class EmptyRequestOptions extends RequestOptions {}
 
 /// The [_RequestConfig] class describes the http request information and configuration.
 class _RequestConfig {

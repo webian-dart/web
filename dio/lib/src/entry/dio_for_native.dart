@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:io';
+
+import 'package:dio/src/entry/save_download_task.dart';
+
 import '../adapter.dart';
+import '../adapters/default_http_client_adapter.dart';
 import '../cancel_token.dart';
-import '../response.dart';
 import '../dio.dart';
+import '../dio_error.dart';
 import '../headers.dart';
 import '../options.dart';
-import '../dio_error.dart';
-import '../adapters/io_adapter.dart';
+import '../response.dart';
 
 Dio createDio([BaseOptions? options]) => DioForNative(options);
 
@@ -74,148 +76,59 @@ class DioForNative with DioMixin implements Dio {
 
     // Receive data with stream.
     options.responseType = ResponseType.stream;
-    Response<ResponseBody> response;
+
+    final response = await _makeRequest(urlPath,
+        data: data,
+        options: options,
+        queryParameters: queryParameters,
+        cancelToken: cancelToken);
+    final future = SaveDownloadTask(
+            savePath: savePath,
+            lengthHeader: lengthHeader,
+            onProgress: onReceiveProgress,
+            deleteOnError: deleteOnError,
+            convertToDioError: assureDioError)
+        .start(response);
+    return listenCancelForAsyncTask(cancelToken, future);
+  }
+
+  Future<Response<ResponseBody>> _makeRequest(String urlPath,
+      {required Map<String, dynamic> queryParameters,
+      dynamic data,
+      Options? options,
+      CancelToken? cancelToken}) async {
     try {
-      response = await request<ResponseBody>(
+      final res = await request<ResponseBody>(
         urlPath,
         data: data,
         options: options,
         queryParameters: queryParameters,
         cancelToken: cancelToken ?? CancelToken(),
       );
+      return res..headers = Headers.fromMap(res.data?.headers ?? const {});
     } on DioError catch (e) {
-      if (e.type == DioErrorType.RESPONSE) {
-        if (e.response!.request!.receiveDataWhenStatusError == true) {
-          var res = await transformer.transformResponse(
-            e.response!.request!..responseType = ResponseType.json,
-            e.response!.data,
-          );
-          e.response!.data = res;
-        } else {
-          e.response!.data = null;
-        }
-      }
+      await _onDioError(e);
       rethrow;
     } catch (e) {
       rethrow;
     }
+  }
 
-    response.headers = Headers.fromMap(response.data!.headers);
-    File file;
-    if (savePath is Function) {
-      assert(savePath is String Function(Headers),
-          'savePath callback type must be `String Function(HttpHeaders)`');
-      file = File(savePath(response.headers));
-    } else {
-      file = File(savePath.toString());
-    }
-
-    //If directory (or file) doesn't exist yet, the entire method fails
-    file.createSync(recursive: true);
-
-    // Shouldn't call file.writeAsBytesSync(list, flush: flush),
-    // because it can write all bytes by once. Consider that the
-    // file with a very big size(up 1G), it will be expensive in memory.
-    var raf = file.openSync(mode: FileMode.write);
-
-    //Create a Completer to notify the success/error state.
-    var completer = Completer<Response>();
-    var future = completer.future;
-    var received = 0;
-
-    // Stream<Uint8List>
-    var stream = response.data!.stream;
-    var compressed = false;
-    var total = 0;
-    var contentEncoding = response.headers.value(Headers.contentEncodingHeader);
-    if (contentEncoding != null) {
-      compressed = ['gzip', 'deflate', 'compress'].contains(contentEncoding);
-    }
-    if (lengthHeader == Headers.contentLengthHeader && compressed) {
-      total = -1;
-    } else {
-      total = int.parse(response.headers.value(lengthHeader) ?? '-1');
-    }
-
-    late StreamSubscription subscription;
-    Future? asyncWrite;
-    var closed = false;
-    Future _closeAndDelete() async {
-      if (!closed) {
-        closed = true;
-        await asyncWrite;
-        await raf.close();
-        if (deleteOnError) await file.delete();
+  Future _onDioError(DioError error) async {
+    if (error.type == DioErrorType.RESPONSE) {
+      if (error.response?.request?.receiveDataWhenStatusError == true) {
+        var options = (error.response?.request ?? EmptyRequestOptions())
+          ..responseType = ResponseType.json;
+        var res = await transformer.transformResponse(
+          options,
+          error.response?.data,
+        );
+        error.response?.data = res;
+      } else {
+        error.response?.data = null;
       }
     }
-
-    subscription = stream.listen(
-      (data) {
-        subscription.pause();
-        // Write file asynchronously
-        asyncWrite = raf.writeFrom(data).then((_raf) {
-          // Notify progress
-          received += data.length;
-          if (onReceiveProgress != null) {
-            onReceiveProgress(received, total);
-          }
-          raf = _raf;
-          if (cancelToken == null || !cancelToken.isCancelled) {
-            subscription.resume();
-          }
-        }).catchError((err) async {
-          try {
-            await subscription.cancel();
-          } finally {
-            completer.completeError(assureDioError(err));
-          }
-        });
-      },
-      onDone: () async {
-        try {
-          await asyncWrite;
-          closed = true;
-          await raf.close();
-          completer.complete(response);
-        } catch (e) {
-          completer.completeError(assureDioError(e));
-        }
-      },
-      onError: (e) async {
-        try {
-          await _closeAndDelete();
-        } finally {
-          completer.completeError(assureDioError(e));
-        }
-      },
-      cancelOnError: true,
-    );
-    // ignore: unawaited_futures
-    cancelToken?.whenCancel.then((_) async {
-      await subscription.cancel();
-      await _closeAndDelete();
-    });
-
-    if (response.request?.receiveTimeout != null &&
-        response.request!.receiveTimeout! > 0) {
-      future = future
-          .timeout(Duration(milliseconds: response.request!.receiveTimeout!))
-          .catchError((err) async {
-        await subscription.cancel();
-        await _closeAndDelete();
-        if (err is TimeoutException) {
-          throw DioError(
-            request: response.request,
-            error:
-                'Receiving data timeout[${response.request!.receiveTimeout}ms]',
-            type: DioErrorType.RECEIVE_TIMEOUT,
-          );
-        } else {
-          throw err;
-        }
-      });
-    }
-    return listenCancelForAsyncTask(cancelToken, future);
+    throw error;
   }
 
   ///  Download the file and save it in local. The default http method is 'GET',
