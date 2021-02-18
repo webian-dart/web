@@ -1,6 +1,6 @@
 Language: [English](README.md) | [中文简体](README-ZH.md)
 
-# webian
+# Web
 
 This project is a fork of Dio for my own usage.
 
