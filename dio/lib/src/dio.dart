@@ -2,20 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
+
 import 'adapter.dart';
-import 'form_data.dart';
-import 'options.dart';
-import 'interceptor.dart';
-import 'headers.dart';
 import 'cancel_token.dart';
-import 'transformer.dart';
-import 'response.dart';
 import 'dio_error.dart';
 import 'entry_stub.dart'
 // ignore: uri_does_not_exist
     if (dart.library.html) 'entry/dio_for_browser.dart'
 // ignore: uri_does_not_exist
     if (dart.library.io) 'entry/dio_for_native.dart';
+import 'form_data.dart';
+import 'headers.dart';
+import 'interceptor.dart';
+import 'options.dart';
+import 'response.dart';
+import 'transformer.dart';
 
 /// A powerful Http client for Dart, which supports Interceptors,
 /// Global configuration, FormData, File downloading etc. and Dio is
