@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import '../dio_error.dart';
-import '../interceptor.dart';
-import '../options.dart';
-import '../response.dart';
+import '../options/request_options.dart';
+import '../responses/response.dart';
+import 'interceptor.dart';
 
 /// [LogInterceptor] is used to print logs during network requests.
 /// It's better to add [LogInterceptor] to the tail of the interceptor queue,

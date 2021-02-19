@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'dio_error.dart';
+import '../dio_error.dart';
 
 /// You can cancel a request by using a cancel token.
 /// One token can be shared between different requests.

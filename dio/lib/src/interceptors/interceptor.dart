@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'options.dart';
-import 'dio_error.dart';
-import 'response.dart';
+import '../dio_error.dart';
+import '../options/request_options.dart';
+import '../responses/response.dart';
 
 typedef InterceptorSendCallback = dynamic Function(RequestOptions options);
 typedef InterceptorErrorCallback = dynamic Function(DioError e);

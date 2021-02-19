@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'options.dart';
-import 'headers.dart';
-import 'redirect_record.dart';
+
+import '../headers.dart';
+import '../options/request_options.dart';
+import '../requests/redirect_record.dart';
 
 /// Response describes the http Response info.
 class Response<T> {
