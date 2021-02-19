@@ -1,7 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../../dio.dart';
+import '../dio_error.dart';
+import '../headers.dart';
+import '../requests/cancel_token.dart';
+import '../requests/requests.dart';
+import '../responses/response.dart';
+import '../responses/response_body.dart';
 
 class SaveDownloadTask {
   final dynamic savePath;

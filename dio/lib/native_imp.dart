@@ -1,1 +1,1 @@
-export 'src/entry/dio_for_native.dart' show DioForNative;
+export 'src/instances/dio_for_native.dart' show DioForNative;

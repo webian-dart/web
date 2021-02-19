@@ -1,1 +1,1 @@
-export 'src/entry/dio_for_browser.dart' show DioForBrowser;
+export 'src/instances/dio_for_browser.dart' show DioForBrowser;

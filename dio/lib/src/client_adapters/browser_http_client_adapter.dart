@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import '../adapter.dart';
 import '../dio_error.dart';
 import '../headers.dart';
-import '../options.dart';
+import '../options/request_options.dart';
+import '../responses/response_body.dart';
+import 'http_client_adapter.dart';
 
 HttpClientAdapter createAdapter() => BrowserHttpClientAdapter();
 

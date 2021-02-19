@@ -1,15 +1,16 @@
 import 'dart:async';
 
-import 'package:dio/src/entry/save_download_task.dart';
-
-import '../adapter.dart';
-import '../adapters/default_http_client_adapter.dart';
-import '../cancel_token.dart';
+import '../../dio.dart';
+import '../client_adapters/default_http_client_adapter.dart';
 import '../dio.dart';
 import '../dio_error.dart';
 import '../headers.dart';
-import '../options.dart';
-import '../response.dart';
+import '../options/options.dart';
+import '../requests/cancel_token.dart';
+import '../requests/requests.dart';
+import '../responses/response.dart';
+import '../responses/response_body.dart';
+import 'save_download_task.dart';
 
 Dio createDio([BaseOptions? options]) => DioForNative(options);
 

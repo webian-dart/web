@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'multipart_file.dart';
-import 'utils.dart';
+
+import '../requests/multipart_files/multipart_file.dart';
+import '../utils.dart';
 
 /// A class to create readable "multipart/form-data" streams.
 /// It can be used to submit forms and file uploads to http server.

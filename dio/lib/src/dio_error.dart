@@ -1,5 +1,5 @@
-import 'options.dart';
-import 'response.dart';
+import 'options/request_options.dart';
+import 'responses/response.dart';
 
 enum DioErrorType {
   /// It occurs when url is opened timeout.

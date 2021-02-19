@@ -2,10 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import '../adapter.dart';
 import '../dio_error.dart';
-import '../options.dart';
-import '../redirect_record.dart';
+import '../options/request_options.dart';
+import '../requests/redirect_record.dart';
+import '../responses/response_body.dart';
+import 'http_client_adapter.dart';
 
 typedef OnHttpClientCreate = dynamic Function(HttpClient client);
 

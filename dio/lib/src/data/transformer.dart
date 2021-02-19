@@ -4,11 +4,12 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 
-import 'adapter.dart';
-import 'dio_error.dart';
-import 'headers.dart';
-import 'options.dart';
-import 'utils.dart';
+import '../dio_error.dart';
+import '../headers.dart';
+import '../options/request_options.dart';
+import '../responses/response_body.dart';
+import '../responses/responses.dart';
+import '../utils.dart';
 
 /// [Transformer] allows changes to the request/response data before
 /// it is sent/received to/from the server.

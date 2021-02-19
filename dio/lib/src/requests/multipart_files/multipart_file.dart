@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http_parser/http_parser.dart';
-import 'utils.dart';
 
+import 'package:http_parser/http_parser.dart';
+
+import '../../utils.dart';
 // ignore: uri_does_not_exist
 import 'multipart_file_stub.dart'
 // ignore: uri_does_not_exist
