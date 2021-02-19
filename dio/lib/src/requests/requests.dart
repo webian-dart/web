@@ -1,7 +1,5 @@
 import '../options/request_options.dart';
 
-export 'request.dart';
-
 /// Callback to listen the progress for sending/receiving data.
 ///
 /// [count] is the length of the bytes have been sent/received.
