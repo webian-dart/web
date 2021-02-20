@@ -1,23 +1,11 @@
 Language: [English](README.md) 
 
-# Web
-
-This project is a fork of Web for my own usage.
-
-This fork's goals are:
-
-1. Done Complete any missing nullsafety upgrade on plugins.
-2. Done Bring Cookie jar in
-3. WIP - Refactor code applying Clean Code principles.
-
-- So in essence, not to change or add functionality but continue the upgrade started by/in https://github.com/harsimranmaan/web on nullsafety branch.
-
-
-/////////////
-Following text is as on Web project at the time of forking.
-////////////
+# Web (beta)
 
 A powerful Http client for Dart, which supports Interceptors, Global configuration, FormData, Request Cancellation, File downloading, Timeout etc. 
+
+This project is a fork of [Dio](https://github.com/flutterchina/dio) by [wendux](https://github.com/wendux).
+Since the original mantainers, were at the moment of this fork, unable to continue supporting it. And because we wanted to support null-safety, and make some refactorings to make easier for other developers. We decided to make our own version.
 
 ## Get started
 
@@ -25,7 +13,8 @@ A powerful Http client for Dart, which supports Interceptors, Global configurati
 
 ```yaml
 dependencies:
-  web: not available
+  web:
+    path: https://gitlab.com/mobiplay/web/-/tree/master/web
 ```
 
 ### Super simple to use
