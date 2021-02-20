@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 void main() async {
   var url = "http://download.dcloud.net.cn/HBuilder.9.0.2.macosx_64.dmg";
@@ -27,7 +27,7 @@ Future downloadWithChunks(
   const maxChunk = 3;
 
   var total = 0;
-  final dio = Dio();
+  final web = Web();
   final progress = <int>[];
 
   Null Function(int received, dynamic) createCallback(no) {
@@ -42,7 +42,7 @@ Future downloadWithChunks(
   Future<Response> downloadChunk(url, start, end, no) async {
     progress.add(0);
     --end;
-    return dio.download(
+    return web.download(
       url,
       savePath + "temp$no",
       onReceiveProgress: createCallback(no),

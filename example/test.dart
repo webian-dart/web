@@ -1,12 +1,12 @@
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 Future getHttp() async {
-  var dio = Dio();
-  dio.interceptors.add(LogInterceptor(responseBody: true));
-  dio.options.baseUrl = "http://httpbin.org";
-  dio.options.headers = {'Authorization': 'Bearer '};
-  //dio.options.baseUrl = "http://localhost:3000";
-  var response = await dio.post("/post",
+  var web = Web();
+  web.interceptors.add(LogInterceptor(responseBody: true));
+  web.options.baseUrl = "http://httpbin.org";
+  web.options.headers = {'Authorization': 'Bearer '};
+  //web.options.baseUrl = "http://localhost:3000";
+  var response = await web.post("/post",
       data: null,
       options: Options(
           contentType: Headers.jsonContentType,
@@ -17,7 +17,7 @@ Future getHttp() async {
 void main() async {
   await getHttp();
 
-//  var response = await Dio().get("http://flutterchina.club");
+//  var response = await Web().get("http://tautalos.club");
 //  print(response.isRedirect);
 
 //  var t = await MultipartFile.fromBytes([5]);

@@ -1,4 +1,4 @@
-package club.flutterchina.flutterexample;
+package club.tautalos.flutterexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

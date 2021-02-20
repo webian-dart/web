@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 main() async {
-  var dio = Dio(BaseOptions(
+  var web = Web(BaseOptions(
     baseUrl: "http://httpbin.org/",
     connectTimeout: 5000,
     receiveTimeout: 100000,
     // 5s
     headers: {
-      HttpHeaders.userAgentHeader: "dio",
+      HttpHeaders.userAgentHeader: "web",
       "api": "1.0.0",
     },
     contentType: Headers.jsonContentType,
@@ -20,16 +20,16 @@ main() async {
 
   Response response;
 
-  response = await dio.get("/get");
+  response = await web.get("/get");
   print(response.data);
 
-  Response<Map> responseMap = await dio.get(
+  Response<Map> responseMap = await web.get(
     "/get",
     // Transform response data to Json Map
     options: Options(responseType: ResponseType.json),
   );
   print(responseMap.data);
-  response = await dio.post(
+  response = await web.post(
     "/post",
     data: {
       "id": 8,
@@ -42,7 +42,7 @@ main() async {
   );
   print(response.data);
 
-  response = await dio.request(
+  response = await web.request(
     "/",
     options: RequestOptions(baseUrl: "https://google.com"),
   );

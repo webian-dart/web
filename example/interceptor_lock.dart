@@ -1,32 +1,32 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 void main() async {
-  final dio = Dio();
-  //  dio instance to request token
-  final tokenDio = Dio();
+  final web = Web();
+  //  web instance to request token
+  final tokenWeb = Web();
   String? csrfToken;
-  dio.options.baseUrl = "http://www.dtworkroom.com/doris/1/2.0.0/";
-  tokenDio.options = dio.options;
-  dio.interceptors.add(InterceptorsWrapper(onRequest: (RequestOptions options) {
+  web.options.baseUrl = "http://www.dtworkroom.com/doris/1/2.0.0/";
+  tokenWeb.options = web.options;
+  web.interceptors.add(InterceptorsWrapper(onRequest: (RequestOptions options) {
     print('send request：path:${options.path}，baseURL:${options.baseUrl}');
     if (csrfToken == null) {
       print("no token，request token firstly...");
-      dio.lock();
-      //print(dio.interceptors.requestLock.locked);
-      return tokenDio.get("/token").then((d) {
+      web.lock();
+      //print(web.interceptors.requestLock.locked);
+      return tokenWeb.get("/token").then((d) {
         options.headers["csrfToken"] = csrfToken = d.data['data']['token'];
         print("request token succeed, value: " + d.data['data']['token']);
         print(
             'continue to perform request：path:${options.path}，baseURL:${options.path}');
         return options;
-      }).whenComplete(() => dio.unlock()); // unlock the dio
+      }).whenComplete(() => web.unlock()); // unlock the web
     } else {
       options.headers["csrfToken"] = csrfToken;
       return options;
     }
-  }, onError: (DioError error) {
+  }, onError: (WebError error) {
     //print(error);
     // Assume 401 stands for token expired
     if (error.response?.statusCode == 401) {
@@ -35,23 +35,23 @@ void main() async {
       if (csrfToken != options?.headers["csrfToken"]) {
         options?.headers["csrfToken"] = csrfToken;
         //repeat
-        return dio.request(options?.path ?? "", options: options);
+        return web.request(options?.path ?? "", options: options);
       }
       // update token and repeat
       // Lock to block the incoming request until the token updated
-      dio.lock();
-      dio.interceptors.responseLock.lock();
-      dio.interceptors.errorLock.lock();
-      return tokenDio.get("/token").then((d) {
+      web.lock();
+      web.interceptors.responseLock.lock();
+      web.interceptors.errorLock.lock();
+      return tokenWeb.get("/token").then((d) {
         //update csrfToken
         options?.headers["csrfToken"] = csrfToken = d.data['data']['token'];
       }).whenComplete(() {
-        dio.unlock();
-        dio.interceptors.responseLock.unlock();
-        dio.interceptors.errorLock.unlock();
+        web.unlock();
+        web.interceptors.responseLock.unlock();
+        web.interceptors.errorLock.unlock();
       }).then((e) {
         //repeat
-        return dio.request(options?.path ?? "", options: options);
+        return web.request(options?.path ?? "", options: options);
       });
     }
     return error;
@@ -62,8 +62,8 @@ void main() async {
   }
 
   await Future.wait([
-    dio.get("/test?tag=1").then(_onResult),
-    dio.get("/test?tag=2").then(_onResult),
-    dio.get("/test?tag=3").then(_onResult)
+    web.get("/test?tag=1").then(_onResult),
+    web.get("/test?tag=2").then(_onResult),
+    web.get("/test?tag=3").then(_onResult)
   ]);
 }

@@ -21,7 +21,7 @@ class _RequestRouteState extends State<RequestRoute> {
           RaisedButton(
             child: Text("Request"),
             onPressed: () {
-              dio.get<String>("http://httpbin.org/get").then((r) {
+              web.get<String>("http://httpbin.org/get").then((r) {
                 setState(() {
                   _text = r.data ?? "";
                 });

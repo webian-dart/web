@@ -1,3 +1,3 @@
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
-var dio = Dio();
+var web = Web();

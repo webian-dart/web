@@ -1,6 +1,6 @@
-# Http2Adapter [![Pub](https://img.shields.io/pub/v/dio_http2_adapter.svg?style=flat-square)](https://pub.dartlang.org/packages/dio_http2_adapter)
+# Http2Adapter [![Pub](https://img.shields.io/pub/v/web_http2_adapter.svg?style=flat-square)](https://pub.dartlang.org/packages/web_http2_adapter)
 
-A Dio [HttpClientAdapter](https://github.com/flutterchina/dio#httpclientadapter) which implements Http/2.0 .
+A Web [HttpClientAdapter](https://github.com/tautalos/web#httpclientadapter) which implements Http/2.0 .
 
 ## Getting Started
 
@@ -8,24 +8,24 @@ A Dio [HttpClientAdapter](https://github.com/flutterchina/dio#httpclientadapter)
 
 ```yaml
 dependencies:
-  dio_http2_adapter: x.x.x  #latest version
+  web_http2_adapter: x.x.x  #latest version
 ```
 
 ### Usage
 
 ```dart
-import 'package:dio/dio.dart';
-import 'package:dio_http2_adapter/http2.dart'; 
+import 'package:web/web.dart';
+import 'package:web_http2_adapter/http2.dart';
 
 main() async {
-  var dio = Dio()
+  var web = Web()
     ..options.baseUrl = "https://www.ustc.edu.cn/"
     ..httpClientAdapter = Http2Adapter();
 
   Response<String> response;
-  response = await dio.get("/?xx=6");
+  response = await web.get("/?xx=6");
   print(response.data);
-  response = await dio.get("2062/list.htm");
+  response = await web.get("2062/list.htm");
   print(response.data);
 }
 
@@ -36,7 +36,7 @@ main() async {
 ConnectionManager is used to manager the connections that should be reusable. The main responsibility of ConnectionManager is to implement a connection reuse strategy for http2.
 
 ```dart
-dio.httpClientAdapter = Http2Adapter(
+web.httpClientAdapter = Http2Adapter(
   ConnectionManager(
     idleTimeout: 10000,
     /// Ignore bad certificate

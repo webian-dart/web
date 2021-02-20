@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:dio/adapter.dart';
-import 'package:dio/dio.dart';
+import 'package:web/adapter.dart';
+import 'package:web/web.dart';
 
 class MyAdapter extends HttpClientAdapter {
   final DefaultHttpClientAdapter _adapter = DefaultHttpClientAdapter();
@@ -24,10 +24,10 @@ class MyAdapter extends HttpClientAdapter {
 }
 
 void main() async {
-  final dio = Dio();
-  dio.httpClientAdapter = MyAdapter();
-  var response = await dio.get("https://google.com");
+  final web = Web();
+  web.httpClientAdapter = MyAdapter();
+  var response = await web.get("https://google.com");
   print(response);
-  response = await dio.get("https://google.com");
+  response = await web.get("https://google.com");
   print(response);
 }

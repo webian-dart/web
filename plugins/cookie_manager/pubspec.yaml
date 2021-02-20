@@ -1,8 +1,7 @@
-name: dio_cookie_manager
-description: A cookie manager for Dio, which supports persistent cookies in RAM and file.
-version: 1.0.0
-homepage:  https://github.com/flutterchina/dio/tree/master/plugins/cookie_manager
-author: wendux <824783146@qq.com>
+name: web_cookie_manager
+description: A cookie manager for Web, which supports persistent cookies in RAM and file.
+version: 2.0.0
+homepage:  https://github.com/tautalos/web/tree/master/plugins/cookie_manager
 
 environment:
   sdk: '>=2.12.0-0 <3.0.0'
@@ -11,9 +10,9 @@ dependencies:
 #  cookie_jar: ^1.0.1
   cookie_jar:
     path: ../../../cookie_jar
-#  dio: ^3.0.0
-  dio:
-    path: ../../dio
+#  web: ^3.0.0
+  web:
+    path: ../../web
 
 dev_dependencies:
   test: ^1.16.2

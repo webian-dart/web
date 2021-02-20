@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:dio/adapter.dart';
-import 'package:dio/dio.dart';
+import 'package:web/adapter.dart';
+import 'package:web/web.dart';
 
 main() async {
-  var dio = Dio();
-  dio.options.headers["user-agent"] = "xxx";
-  dio.options.contentType = "text";
-  // dio.options.connectTimeout = 2000;
+  var web = Web();
+  web.options.headers["user-agent"] = "xxx";
+  web.options.contentType = "text";
+  // web.options.connectTimeout = 2000;
   // More about HttpClient proxy topic please refer to Dart SDK doc.
-  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+  (web.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
       (HttpClient client) {
     client.findProxy = (uri) {
       //proxy all request to localhost:8888
@@ -21,9 +21,9 @@ main() async {
   var dir = Directory("./cookies");
   await dir.create();
   Response<String> response;
-  //response= await dio.get("https://github.com/wendux/fly");
-  response = await dio.get("https://www.google.com");
+  //response= await web.get("https://github.com/wendux/fly");
+  response = await web.get("https://www.google.com");
   print(response.statusCode);
-  response = await dio.get("https://www.google.com");
+  response = await web.get("https://www.google.com");
   print(response.statusCode);
 }

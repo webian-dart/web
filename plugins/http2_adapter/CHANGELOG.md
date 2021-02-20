@@ -8,4 +8,4 @@
 
 ## [0.0.2] - 2019.9.17
 
-* A Dio HttpAdapter which support Http/2.0.
+* A Web HttpAdapter which support Http/2.0.

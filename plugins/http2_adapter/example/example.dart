@@ -1,8 +1,8 @@
-import 'package:dio/dio.dart';
-import 'package:dio_http2_adapter/dio_http2_adapter.dart';
+import 'package:web/web.dart';
+import 'package:web_http2_adapter/web_http2_adapter.dart';
 
 main() async {
-  var dio = Dio()
+  var web = Web()
     ..options.baseUrl = "https://google.com"
     ..interceptors.add(LogInterceptor())
     ..httpClientAdapter = Http2Adapter(
@@ -15,7 +15,7 @@ main() async {
 
   Response<String> response;
 
-  response = await dio.get("/?xx=6");
+  response = await web.get("/?xx=6");
   print(response.data!.length);
   print(response.redirects.length);
   print(response.data);
