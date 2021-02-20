@@ -1,4 +1,4 @@
-# web_cookie_manager [![Pub](https://img.shields.io/pub/v/web_cookie_manager.svg?style=flat-square)](https://pub.dartlang.org/packages/web_cookie_manager)
+# cookie_manager [![Pub](https://img.shields.io/pub/v/cookie_manager.svg?style=flat-square)](https://pub.dartlang.org/packages/cookie_manager)
 
 A  cookie manager for [Web](https://github.com/tautalos/web).
 
@@ -8,22 +8,22 @@ A  cookie manager for [Web](https://github.com/tautalos/web).
 
 ```yaml
 dependencies:
-  web_cookie_manager: ^1.0.0  #latest version
+  cookie_manager: ^1.0.0  #latest version
 ```
 
 ### Usage
 
 ```dart
 import 'package:web/web.dart';
-import 'package:web_cookie_manager/web_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
+import 'package:cookie_manager/cookie_manager.dart';
+import 'package:web_cookies/web_cookies.dart';
 
 main() async {
   var web =  Web();
-  var cookieJar=CookieJar();
-  web.interceptors.add(CookieManager(cookieJar));
+  var webCookies=WebCookies();
+  web.interceptors.add(CookieManager(webCookies));
   // Print cookies
-  print(cookieJar.loadForRequest(Uri.parse("https://google.com/")));
+  print(webCookies.loadForRequest(Uri.parse("https://google.com/")));
   // second request with the cookie
   await web.get("https://google.com/");
   ... 
@@ -32,26 +32,26 @@ main() async {
 
 ## Cookie Manager
 
-CookieManager Interceptor can help us manage the request/response cookies automaticly. CookieManager depends on `cookieJar` package :
+CookieManager Interceptor can help us manage the request/response cookies automaticly. CookieManager depends on `webCookies` package :
 
-> The web_cookie_manager  manage API is based on the withdrawn [cookie_jar](https://github.com/tautalos/cookie_jar).
+> The cookie_manager  manage API is based on the withdrawn [web_cookies](https://github.com/tautalos/web_cookies).
 
-You can create a `CookieJar` or `PersistCookieJar` to manage cookies automatically, and web use the `CookieJar` by default, which saves the cookies **in RAM**. If you want to persists cookies, you can use the `PersistCookieJar` class, for example:
+You can create a `WebCookies` or `PersistWebCookies` to manage cookies automatically, and web use the `WebCookies` by default, which saves the cookies **in RAM**. If you want to persists cookies, you can use the `PersistWebCookies` class, for example:
 
 ```dart
-web.interceptors.add(CookieManager(PersistCookieJar()))
+web.interceptors.add(CookieManager(PersistWebCookies()))
 ```
 
-`PersistCookieJar` persists the cookies in files, so if the application exit, the cookies always exist unless call `delete` explicitly.
+`PersistWebCookies` persists the cookies in files, so if the application exit, the cookies always exist unless call `delete` explicitly.
 
-> Note: In flutter, the path passed to `PersistCookieJar` must be valid(exists in phones and with write access). you can use [path_provider](https://pub.dartlang.org/packages/path_provider) package to get right path.
+> Note: In flutter, the path passed to `PersistWebCookies` must be valid(exists in phones and with write access). you can use [path_provider](https://pub.dartlang.org/packages/path_provider) package to get right path.
 
 In flutter: 
 
 ```dart
 Directory appDocDir = await getApplicationDocumentsDirectory();
 String appDocPath = appDocDir.path;
-var cookieJar=PersistCookieJar(dir:appdocPath+"/.cookies/");
-web.interceptors.add(CookieManager(cookieJar));
+var webCookies=PersistWebCookies(dir:appdocPath+"/.cookies/");
+web.interceptors.add(CookieManager(webCookies));
 ...
 ```

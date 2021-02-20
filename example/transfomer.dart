@@ -11,7 +11,7 @@ class MyTransformer extends DefaultTransformer {
   @override
   Future<String> transformRequest(RequestOptions options) async {
     if (options.data is List<String>) {
-      throw WebError(error: "Can't send List to sever directly");
+      throw Fault(error: "Can't send List to sever directly");
     } else {
       return super.transformRequest(options);
     }

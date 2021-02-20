@@ -5,8 +5,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:Web/Web.dart';
 import 'package:test/test.dart';
+import 'package:web/web.dart';
 
 void main() {
   test('#test FormData', () async {
@@ -17,11 +17,11 @@ void main() {
       'files': [
         await MultipartFile.fromFile('../Web/test/_testfile',
             filename: '1.txt'),
-        MultipartFile.fromFileSync('../Web/test/_testfile', filename: '2.txt'),
+        MultipartFile.fromFileSync('../web/test/_testfile', filename: '2.txt'),
       ]
     });
     var fmStr = await fm.readAsBytes();
-    var f = File('../Web/test/_formdata');
+    var f = File('../web/test/_formdata');
     var content = f.readAsStringSync();
     content = content.replaceAll('--Web-boundary-3788753558', fm.boundary);
     var actual = utf8.decode(fmStr, allowMalformed: true);
@@ -37,11 +37,11 @@ void main() {
     fm1.files.add(MapEntry('file', MultipartFile.fromString('hellow world.')));
     fm1.files.add(MapEntry(
       'files[]',
-      await MultipartFile.fromFile('../Web/test/_testfile', filename: '1.txt'),
+      await MultipartFile.fromFile('../web/test/_testfile', filename: '1.txt'),
     ));
     fm1.files.add(MapEntry(
       'files[]',
-      await MultipartFile.fromFile('../Web/test/_testfile', filename: '2.txt'),
+      await MultipartFile.fromFile('../web/test/_testfile', filename: '2.txt'),
     ));
     assert(fmStr.length == fm1.length);
   });

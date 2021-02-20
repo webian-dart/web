@@ -40,8 +40,8 @@ void getHttp() async {
 
 | Plugins                                                      | Status                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [Web_cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) | [![Pub](https://img.shields.io/pub/v/Web_http2_adapter.svg?style=flat-square)](https://pub.dartlang.org/packages/Web_http2_adapter) | A cookie manager for Web                                     |
-| [Web_http2_adapter](https://github.com/tautalos/Web/tree/master/plugins/http2_adapter) | [![Pub](https://img.shields.io/pub/v/Web_cookie_manager.svg?style=flat-square)](https://pub.dartlang.org/packages/Web_cookie_manager) | A Web HttpClientAdapter which support Http/2.0               |
+| [cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) | [![Pub](https://img.shields.io/pub/v/Web_http2_adapter.svg?style=flat-square)](https://pub.dartlang.org/packages/Web_http2_adapter) | A cookie manager for Web                                     |
+| [Web_http2_adapter](https://github.com/tautalos/Web/tree/master/plugins/http2_adapter) | [![Pub](https://img.shields.io/pub/v/cookie_manager.svg?style=flat-square)](https://pub.dartlang.org/packages/cookie_manager) | A Web HttpClientAdapter which support Http/2.0               |
 | [Web_flutter_transformer](https://github.com/tautalos/Web_flutter_transformer) | [![Pub](https://img.shields.io/pub/v/Web_flutter_transformer.svg?style=flat-square)](https://pub.dartlang.org/packages/Web_flutter_transformer) | A Web transformer especially for flutter, by which the json decoding will be in background with `compute` function. |
 | [Web_http_cache](https://github.com/hurshi/Web-http-cache)   | [![Pub](https://img.shields.io/pub/v/Web_http_cache.svg?style=flat-square)](https://pub.dartlang.org/packages/Web_http_cache) | A cache library for Web, like [Rxcache](https://github.com/VictorAlbertos/RxCache) in Android. Web-http-cache uses [sqflite](https://github.com/tekartik/sqflite) as disk cache, and [LRU](https://github.com/google/quiver-dart) strategy as memory cache. |
 | [retrofit](https://github.com/trevorwang/retrofit.dart/)     | [![Pub](https://img.shields.io/pub/v/retrofit.svg?style=flat-square)](https://pub.dartlang.org/packages/retrofit) | retrofit.dart is an Web client generator using source_gen and inspired by Chopper and Retrofit. |
@@ -270,7 +270,7 @@ The Options class describes the http request information and configuration. Each
   int connectTimeout;
 
    ///  Whenever more than [receiveTimeout] (in milliseconds) passes between two events from response stream,
-  ///  [Web] will throw the [WebError] with [WebErrorType.RECEIVE_TIMEOUT].
+  ///  [Web] will throw the [Fault] with [FaultType.RECEIVE_TIMEOUT].
   ///  Note: This is not the receiving time limitation.
   int receiveTimeout;
 
@@ -362,13 +362,13 @@ Web.interceptors.add(InterceptorsWrapper(
      // If you want to resolve the request with some custom data，
      // you can return a `Response` object or return `Web.resolve(data)`.
      // If you want to reject the request with a error message,
-     // you can return a `WebError` object or return `Web.reject(errMsg)`
+     // you can return a `Fault` object or return `Web.reject(errMsg)`
     },
     onResponse:(Response response) async {
      // Do something with response data
      return response; // continue
     },
-    onError: (WebError e) async {
+    onError: (Fault e) async {
      // Do something with response error
      return  e;//continue
     }
@@ -378,7 +378,7 @@ Web.interceptors.add(InterceptorsWrapper(
 
 ### Resolve and reject the request
 
-In all interceptors, you can interfere with their execution flow. If you want to resolve the request/response with some custom data，you can return a `Response` object or return `Web.resolve(data)`.  If you want to reject the request/response with a error message, you can return a `WebError` object or return `Web.reject(errMsg)` .
+In all interceptors, you can interfere with their execution flow. If you want to resolve the request/response with some custom data，you can return a `Response` object or return `Web.resolve(data)`.  If you want to reject the request/response with a error message, you can return a `Fault` object or return `Web.reject(errMsg)` .
 
 ```dart
 Web.interceptors.add(InterceptorsWrapper(
@@ -467,17 +467,17 @@ You can custom interceptor by extending the `Interceptor` class. There is an exa
 
 ## Cookie Manager
 
-[Web_cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) package is a cookie manager for Web.
+[cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) package is a cookie manager for Web.
 
 ## Handling Errors
 
-When a error occurs, Web will wrap the `Error/Exception` to a `WebError`:
+When a error occurs, Web will wrap the `Error/Exception` to a `Fault`:
 
 ```dart
 try {
     //404
     await Web.get("https://wendux.github.io/xsddddd");
-} on WebError catch(e) {
+} on Fault catch(e) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx and is also not 304.
     if(e.response) {
@@ -492,7 +492,7 @@ try {
 }
 ```
 
-### WebError scheme
+### Fault scheme
 
 ```dart
  {
@@ -503,18 +503,18 @@ try {
   /// Error descriptions.
   String message;
 
-  WebErrorType type;
+  FaultType type;
 
   /// The original error/exception object; It's usually not null when `type`
-  /// is WebErrorType.DEFAULT
+  /// is FaultType.DEFAULT
   dynamic error;
 }
 ```
 
-### WebErrorType
+### FaultType
 
 ```dart
-enum WebErrorType {
+enum FaultType {
   /// When opening  url timeout, it occurs.
   CONNECT_TIMEOUT,
 
@@ -528,7 +528,7 @@ enum WebErrorType {
   CANCEL,
 
   /// Default error type, Some other Error. In this case, you can
-  /// read the WebError.error if it is not null.
+  /// read the Fault.error if it is not null.
   DEFAULT,
 }
 ```

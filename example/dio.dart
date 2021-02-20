@@ -31,7 +31,7 @@ void main() async {
     ..add(InterceptorsWrapper(
       onRequest: (Options options) {
         // return ds.resolve( Response(data:"xxx"));
-        // return ds.reject( WebError(message: "eh"));
+        // return ds.reject( Fault(message: "eh"));
         return options;
       },
     ))

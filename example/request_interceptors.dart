@@ -17,7 +17,7 @@ void main() async {
         return web.reject("test error");
       case "/fakepath4":
         // Here is equivalent to call web.reject("test error")
-        return WebError(error: "test error");
+        return Fault(error: "test error");
       default:
         return options; //continue
     }
@@ -29,13 +29,13 @@ void main() async {
   assert(response.data["headers"] is Map);
   try {
     response = await web.get("/fakepath3");
-  } on WebError catch (e) {
+  } on Fault catch (e) {
     assert(e.message == "test error");
     assert(e.response == null);
   }
   try {
     response = await web.get("/fakepath4");
-  } on WebError catch (e) {
+  } on Fault catch (e) {
     print(e);
     assert(e.message == "test error");
     assert(e.response == null);
@@ -44,7 +44,7 @@ void main() async {
   assert(response.data["headers"] is Map);
   try {
     await web.get("xsddddd");
-  } on WebError catch (e) {
+  } on Fault catch (e) {
     assert(e.response!.statusCode == 404);
   }
 }

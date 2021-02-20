@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:collection';
 
-import '../Web_error.dart';
+import '../fault.dart';
 import '../options/request_options.dart';
 import '../responses/response.dart';
 
 typedef InterceptorSendCallback = dynamic Function(RequestOptions options);
-typedef InterceptorErrorCallback = dynamic Function(WebError e);
+typedef InterceptorErrorCallback = dynamic Function(Fault e);
 typedef InterceptorSuccessCallback = dynamic Function(Response e);
 typedef EnqueueCallback = FutureOr Function();
 
@@ -68,7 +68,7 @@ class Interceptor {
   /// If you want to resolve the request with some custom data，
   /// you can return a [Response] object or return [Web.resolve].
   /// If you want to reject the request with a error message,
-  /// you can return a [WebError] object or return [Web.reject] .
+  /// you can return a [Fault] object or return [Web.reject] .
   /// If you want to continue the request, return the [Options] object.
   /// ```dart
   ///  Future onRequest(RequestOptions options) => Web.resolve('fake data');
@@ -80,7 +80,7 @@ class Interceptor {
   /// The callback will be executed on success.
   ///
   /// If you want to reject the request with a error message,
-  /// you can return a [WebError] object or return [Web.reject] .
+  /// you can return a [Fault] object or return [Web.reject] .
   /// If you want to continue the request, return the [Response] object.
   Future onResponse(Response response) async => response;
 
@@ -88,8 +88,8 @@ class Interceptor {
   ///
   /// If you want to resolve the request with some custom data，
   /// you can return a [Response] object or return [Web.resolve].
-  /// If you want to continue the request, return the [WebError] object.
-  Future onError(WebError err) async => err;
+  /// If you want to continue the request, return the [Fault] object.
+  Future onError(Fault err) async => err;
 }
 
 class InterceptorsWrapper extends Interceptor {
@@ -120,7 +120,7 @@ class InterceptorsWrapper extends Interceptor {
   }
 
   @override
-  Future onError(WebError err) async {
+  Future onError(Fault err) async {
     if (_onError != null) {
       return _onError!(err);
     }

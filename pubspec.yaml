@@ -9,7 +9,7 @@ dependencies:
     path: web
   web_http2_adapter:
     path: plugins/http2_adapter
-  web_cookie_manager:
+  cookie_manager:
     path: plugins/cookie_manager
   http2: ^2.0.0
   test: ^1.16.2

@@ -4,8 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:Web/Web.dart';
 import 'package:test/test.dart';
+import 'package:web/web.dart';
 
 import 'utils.dart';
 
@@ -16,15 +16,15 @@ void main() {
   tearDown(stopServer);
 
   group('#test requests', () {
-    late Web Web;
+    late Web web;
     setUp(() {
-      Web = Web();
-      Web.options
+      web = Web();
+      web.options
         ..baseUrl = serverUrl.toString()
         ..connectTimeout = 1000
         ..receiveTimeout = 5000
         ..headers = {'User-Agent': 'dartisan'};
-      Web.interceptors.add(LogInterceptor(
+      web.interceptors.add(LogInterceptor(
         responseBody: true,
         requestBody: true,
         logPrint: (log) => {
@@ -36,7 +36,7 @@ void main() {
       Response response;
 
       // test get
-      response = await Web.get(
+      response = await web.get(
         '/test',
         queryParameters: {'id': '12', 'name': 'wendu'},
       );
@@ -48,31 +48,31 @@ void main() {
       const map = {'content': 'I am playload'};
 
       // test post
-      response = await Web.post('/test', data: map);
+      response = await web.post('/test', data: map);
       expect(response.data['method'], 'POST');
       expect(response.data['body'], jsonEncode(map));
 
       // test put
-      response = await Web.put('/test', data: map);
+      response = await web.put('/test', data: map);
       expect(response.data['method'], 'PUT');
       expect(response.data['body'], jsonEncode(map));
 
       // test patch
-      response = await Web.patch('/test', data: map);
+      response = await web.patch('/test', data: map);
       expect(response.data['method'], 'PATCH');
       expect(response.data['body'], jsonEncode(map));
 
       // test head
-      response = await Web.delete('/test', data: map);
+      response = await web.delete('/test', data: map);
       expect(response.data['method'], 'DELETE');
       expect(response.data['path'], '/test');
 
       // error test
-      expect(Web.get('/error').catchError((e) => throw e.response.statusCode),
+      expect(web.get('/error').catchError((e) => throw e.response.statusCode),
           throwsA(equals(400)));
 
       // redirect test
-      response = await Web.get(
+      response = await web.get(
         '/redirect',
         onReceiveProgress: (received, total) {
           // ignore progress
@@ -89,7 +89,7 @@ void main() {
       Response response;
 
       // test get
-      response = await Web.getUri(
+      response = await web.getUri(
         Uri(path: '/test', queryParameters: {'id': '12', 'name': 'wendu'}),
       );
       expect(response.statusCode, 200);
@@ -100,29 +100,29 @@ void main() {
       const map = {'content': 'I am playload'};
 
       // test post
-      response = await Web.postUri(Uri(path: '/test'), data: map);
+      response = await web.postUri(Uri(path: '/test'), data: map);
       expect(response.data['method'], 'POST');
       expect(response.data['body'], jsonEncode(map));
 
       // test put
-      response = await Web.putUri(Uri(path: '/test'), data: map);
+      response = await web.putUri(Uri(path: '/test'), data: map);
       expect(response.data['method'], 'PUT');
       expect(response.data['body'], jsonEncode(map));
 
       // test patch
-      response = await Web.patchUri(Uri(path: '/test'), data: map);
+      response = await web.patchUri(Uri(path: '/test'), data: map);
       expect(response.data['method'], 'PATCH');
       expect(response.data['body'], jsonEncode(map));
 
       // test head
-      response = await Web.deleteUri(Uri(path: '/test'), data: map);
+      response = await web.deleteUri(Uri(path: '/test'), data: map);
       expect(response.data['method'], 'DELETE');
       expect(response.data['path'], '/test');
     });
 
     test('#test redirect', () async {
       Response response;
-      response = await Web.get('/redirect');
+      response = await web.get('/redirect');
       assert(response.isRedirect == true);
       assert(response.redirects.length == 1);
       var ri = response.redirects.first;
@@ -135,19 +135,19 @@ void main() {
       Response response;
 
       // default is "Map"
-      response = await Web.get('/test');
+      response = await web.get('/test');
       assert(response.data is Map);
 
       // get response as `string`
-      response = await Web.get<String>('/test');
+      response = await web.get<String>('/test');
       assert(response.data is String);
 
       // get response as `Map`
-      response = await Web.get<Map>('/test');
+      response = await web.get<Map>('/test');
       assert(response.data is Map);
 
       // get response as `List`
-      response = await Web.get<List>('/list');
+      response = await web.get<List>('/list');
       assert(response.data is List);
       expect(response.data[0], 1);
     });

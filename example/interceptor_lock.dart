@@ -26,7 +26,7 @@ void main() async {
       options.headers["csrfToken"] = csrfToken;
       return options;
     }
-  }, onError: (WebError error) {
+  }, onError: (Fault error) {
     //print(error);
     // Assume 401 stands for token expired
     if (error.response?.statusCode == 401) {

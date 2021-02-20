@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import '../Web_error.dart';
+import '../fault.dart';
 import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';
@@ -121,8 +121,8 @@ class BrowserHttpClientAdapter implements HttpClientAdapter {
       {required Completer<ResponseBody> completer,
       required RequestOptions options}) {
     completer.completeError(
-      WebError(
-        type: WebErrorType.RESPONSE,
+      Fault(
+        type: FaultType.RESPONSE,
         error: error,
         request: options,
       ),

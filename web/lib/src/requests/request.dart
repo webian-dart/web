@@ -84,7 +84,7 @@ class Request<T> {
     //               if (!request) data.request = data.request ?? requestOptions;
     //               return interceptor(data).then((e) => e ?? data);
     //             } else {
-    //               throw assureWebError(data, requestOptions);
+    //               throw assureFault(data, requestOptions);
     //             }
     //           });
     //         }),
@@ -102,10 +102,10 @@ class Request<T> {
     //   return (err) {
     //     return checkIfNeedEnqueue(interceptors.errorLock, () {
     //       if (err is! Response) {
-    //         return errInterceptor(assureWebError(err, requestOptions))
+    //         return errInterceptor(assureFault(err, requestOptions))
     //             .then((e) {
     //           if (e is! Response) {
-    //             throw assureWebError(e ?? err, requestOptions);
+    //             throw assureFault(e ?? err, requestOptions);
     //           }
     //           return e;
     //         });
@@ -140,12 +140,12 @@ class Request<T> {
     //   future = future.catchError(_errorInterceptorWrapper(interceptor.onError));
     // });
     //
-    // // Normalize errors, we convert error to the WebError
+    // // Normalize errors, we convert error to the Fault
     // return future.then<Response<T>>((data) {
     //   return assureResponse<T>(data);
     // }).catchError((err) {
     //   if (err == null || _isErrorOrException(err)) {
-    //     throw assureWebError(err, requestOptions);
+    //     throw assureFault(err, requestOptions);
     //   }
     //   return assureResponse<T>(err, requestOptions);
     // });

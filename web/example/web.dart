@@ -1,8 +1,8 @@
-import 'package:Web/Web.dart';
+import 'package:web/web.dart';
 
 /// More examples see https://github.com/tautalos/Web/tree/master/example
 void main() async {
-  var Web = Web();
-  final response = await Web.get('https://google.com');
+  var web = Web();
+  final response = await web.get('https://google.com');
   print(response.data);
 }

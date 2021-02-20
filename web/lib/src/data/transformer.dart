@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 
-import '../Web_error.dart';
+import '../fault.dart';
 import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';
@@ -122,10 +122,10 @@ class DefaultTransformer extends Transformer {
             .timeout(Duration(milliseconds: options.receiveTimeout!));
       } on TimeoutException {
         await subscription.cancel();
-        throw WebError(
+        throw Fault(
           request: options,
           error: 'Receiving data timeout[${options.receiveTimeout}ms]',
-          type: WebErrorType.RECEIVE_TIMEOUT,
+          type: FaultType.RECEIVE_TIMEOUT,
         );
       }
     } else {

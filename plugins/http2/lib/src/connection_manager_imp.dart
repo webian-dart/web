@@ -80,10 +80,10 @@ class _ConnectionManager implements ConnectionManager {
     } on SocketException catch (e) {
       if (e.osError == null) {
         if (e.message.contains("timed out")) {
-          throw WebError(
+          throw Fault(
             request: options,
             error: "Connecting timed out [${options.connectTimeout}ms]",
-            type: WebErrorType.CONNECT_TIMEOUT,
+            type: FaultType.CONNECT_TIMEOUT,
           );
         }
       }

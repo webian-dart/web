@@ -326,14 +326,14 @@ Web.interceptors.add(InterceptorsWrapper(
      // 如果你想完成请求并返回一些自定义数据，可以返回一个`Response`对象或返回`Web.resolve(data)`。
      // 这样请求将会被终止，上层then会被调用，then中返回的数据将是你的自定义数据data.
      //
-     // 如果你想终止请求并触发一个错误,你可以返回一个`WebError`对象，或返回`Web.reject(errMsg)`，
+     // 如果你想终止请求并触发一个错误,你可以返回一个`Fault`对象，或返回`Web.reject(errMsg)`，
      // 这样请求将被中止并触发异常，上层catchError会被调用。
     },
     onResponse:(Response response) async {
      // 在返回响应数据之前做一些预处理
      return response; // continue
     },
-    onError: (WebError e) async {
+    onError: (Fault e) async {
       // 当请求失败时做一些预处理
      return e;//continue
     }
@@ -342,7 +342,7 @@ Web.interceptors.add(InterceptorsWrapper(
 
 ### 完成和终止请求/响应
 
-在所有拦截器中，你都可以改变请求执行流， 如果你想完成请求/响应并返回自定义数据，你可以返回一个 `Response` 对象或返回 `Web.resolve(data)`的结果。 如果你想终止(触发一个错误，上层`catchError`会被调用)一个请求/响应，那么可以返回一个`WebError` 对象或返回 `Web.reject(errMsg)` 的结果.
+在所有拦截器中，你都可以改变请求执行流， 如果你想完成请求/响应并返回自定义数据，你可以返回一个 `Response` 对象或返回 `Web.resolve(data)`的结果。 如果你想终止(触发一个错误，上层`catchError`会被调用)一个请求/响应，那么可以返回一个`Fault` 对象或返回 `Web.reject(errMsg)` 的结果.
 
 ```dart
 Web.interceptors.add(InterceptorsWrapper(
@@ -447,7 +447,7 @@ Web.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
 
 ### Cookie管理
 
-[Web_cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) 包是Web的一个插件，它提供了一个Cookie管理器。详细示例可以移步[Web_cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) 。
+[cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) 包是Web的一个插件，它提供了一个Cookie管理器。详细示例可以移步[cookie_manager](https://github.com/tautalos/Web/tree/master/plugins/cookie_manager) 。
 
 ### 自定义拦截器
 
@@ -455,13 +455,13 @@ Web.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
 
 ## 错误处理
 
-当请求过程中发生错误时, Web 会包装 `Error/Exception` 为一个 `WebError`:
+当请求过程中发生错误时, Web 会包装 `Error/Exception` 为一个 `Fault`:
 
 ```dart
   try {
     //404
     await Web.get("https://wendux.github.io/xsddddd");
-  } on WebError catch (e) {
+  } on Fault catch (e) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx and is also not 304.
     if (e.response) {
@@ -476,7 +476,7 @@ Web.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
   }
 ```
 
-### WebError 字段
+### Fault 字段
 
 ```dart
  {
@@ -487,22 +487,22 @@ Web.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
   String message;
 
   /// 错误类型，见下文
-  WebErrorType type;
+  FaultType type;
 
   ///原始的error或exception对象，通常type为DEFAULT时存在。
   dynamic error;
 }
 ```
 
-### WebErrorType
+### FaultType
 
 ```dart
-enum WebErrorType {
+enum FaultType {
   /// When opening  url timeout, it occurs.
   CONNECT_TIMEOUT,
 
   ///  Whenever more than [receiveTimeout] (in milliseconds) passes between two events from response stream,
-  ///  [Web] will throw the [WebError] with [WebErrorType.RECEIVE_TIMEOUT].
+  ///  [Web] will throw the [Fault] with [FaultType.RECEIVE_TIMEOUT].
   ///
   ///  Note: This is not the receiving time limitation.
   RECEIVE_TIMEOUT,
@@ -514,7 +514,7 @@ enum WebErrorType {
   CANCEL,
 
   /// Default error type, Some other Error. In this case, you can
-  /// read the WebError.error if it is not null.
+  /// read the Fault.error if it is not null.
   DEFAULT
 }
 ```
@@ -701,7 +701,7 @@ String PEM="XXXXX"; // certificate content
 ```dart
 CancelToken token = CancelToken();
 Web.get(url, cancelToken: token)
-    .catchError((WebError err){
+    .catchError((Fault err){
         if (CancelToken.isCancel(err)) {
             print('Request canceled! '+ err.message)
         }else{

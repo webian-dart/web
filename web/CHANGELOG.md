@@ -123,7 +123,7 @@ Add `deleteOnError` parameter to `downloadUri`
 # 2.1.4
 
 - Add `options.responseDecoder`
-- Make WebError catchable by implementing Exception instead of Error
+- Make Fault catchable by implementing Exception instead of Error
 
 # 2.1.3
 

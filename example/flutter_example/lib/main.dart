@@ -19,7 +19,7 @@ Future parseJson(String text) {
 
 void main() {
   // add interceptors
-  //web.interceptors.add(CookieManager(CookieJar()));
+  //web.interceptors.add(CookieManager(WebCookies()));
   web.interceptors.add(LogInterceptor());
   //(web.transformer as DefaultTransformer).jsonDecodeCallback = parseJson;
   web.options.receiveTimeout = 15000;

@@ -1,1 +1,1 @@
-export 'src/instances/Web_for_native.dart' show WebForNative;
+export 'src/instances/web_for_native.dart' show WebForNative;

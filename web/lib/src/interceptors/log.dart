@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../Web_error.dart';
+import '../fault.dart';
 import '../options/request_options.dart';
 import '../responses/response.dart';
 import 'interceptor.dart';
@@ -75,9 +75,9 @@ class LogInterceptor extends Interceptor {
   }
 
   @override
-  Future onError(WebError err) async {
+  Future onError(Fault err) async {
     if (error) {
-      logPrint('*** WebError ***:');
+      logPrint('*** Fault ***:');
       logPrint('uri: ${err.request?.uri}');
       logPrint('$err');
       if (err.response != null) {

@@ -87,7 +87,7 @@ class BaseOptions extends RequestConfig {
   Map<String, dynamic> queryParameters;
 
   /// Timeout in milliseconds for opening url.
-  /// [Web] will throw the [WebError] with [WebErrorType.CONNECT_TIMEOUT] type
+  /// [Web] will throw the [Fault] with [FaultType.CONNECT_TIMEOUT] type
   ///  when time out.
   int? connectTimeout;
 }

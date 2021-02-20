@@ -5,8 +5,8 @@
 @TestOn('vm')
 import 'dart:io';
 
-import 'package:Web/Web.dart';
 import 'package:test/test.dart';
+import 'package:web/web.dart';
 
 import 'utils.dart';
 
@@ -15,9 +15,9 @@ void main() {
   tearDown(stopServer);
   test('#test download1', () async {
     const savePath = '../_download_test.md';
-    var Web = Web();
-    Web.options.baseUrl = serverUrl.toString();
-    await Web.download(
+    var web = Web();
+    web.options.baseUrl = serverUrl.toString();
+    await web.download(
       '/download', savePath, // disable gzip
       onReceiveProgress: (received, total) {
         // ignore progress
@@ -31,9 +31,9 @@ void main() {
 
   test('#test download2', () async {
     const savePath = '../_download_test.md';
-    var Web = Web();
-    Web.options.baseUrl = serverUrl.toString();
-    await Web.downloadUri(
+    final web = Web();
+    web.options.baseUrl = serverUrl.toString();
+    await web.downloadUri(
       serverUrl.replace(path: '/download'),
       (header) => savePath, // disable gzip
     );
@@ -45,27 +45,29 @@ void main() {
 
   test('#test download error', () async {
     const savePath = '../_download_test.md';
-    var Web = Web();
-    Web.options.baseUrl = serverUrl.toString();
+    final web = Web();
+    web.options.baseUrl = serverUrl.toString();
     var r =
-        await Web.download('/error', savePath).catchError((e) => e.response);
+        await web.download('/error', savePath).catchError((e) => e.response);
     assert(r.data == 'error');
-    r = await Web.download(
-      '/error',
-      savePath,
-      options: Options(receiveDataWhenStatusError: false),
-    ).catchError((e) => e.response);
+    r = await web
+        .download(
+          '/error',
+          savePath,
+          options: Options(receiveDataWhenStatusError: false),
+        )
+        .catchError((e) => e.response);
     assert(r.data == null);
   });
 
   test('#test download timeout', () async {
     const savePath = '../_download_test.md';
-    var Web = Web(BaseOptions(
+    final web = Web(BaseOptions(
       receiveTimeout: 100,
       baseUrl: serverUrl.toString(),
     ));
-    expect(Web.download('/download', savePath).catchError((e) => throw e.type),
-        throwsA(WebErrorType.RECEIVE_TIMEOUT));
+    expect(web.download('/download', savePath).catchError((e) => throw e.type),
+        throwsA(FaultType.RECEIVE_TIMEOUT));
     //print(r);
   });
 
@@ -83,7 +85,7 @@ void main() {
             cancelToken: cancelToken,
           )
           .catchError((e) => throw e.type),
-      throwsA(WebErrorType.CANCEL),
+      throwsA(FaultType.CANCEL),
     );
     //print(r);
   });

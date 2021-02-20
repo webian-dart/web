@@ -1,8 +1,9 @@
-import 'package:Web/Web.dart';
+import 'package:web/web.dart';
 
-import '../Web.dart';
 import '../client_adapters/browser_http_client_adapter.dart';
 import '../options/options.dart';
+import '../web.dart';
+import '../web_mixin.dart';
 
 Web createWeb([BaseOptions? options]) => WebForBrowser(options);
 

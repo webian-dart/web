@@ -5,8 +5,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Web/Web.dart';
 import 'package:test/test.dart';
+import 'package:web/web.dart';
 
 void main() {
   test('#test options', () {
@@ -128,16 +128,17 @@ void main() {
   });
 
   test('#cancellation', () async {
-    var Web = Web();
+    var web = Web();
     final token = CancelToken();
     Timer(Duration(milliseconds: 10), () {
       token.cancel('cancelled');
-      Web.httpClientAdapter.close(force: true);
+      web.httpClientAdapter.close(force: true);
     });
 
     var url = 'https://accounts.google.com';
     expect(
-        Web.get(url, cancelToken: token)
+        web
+            .get(url, cancelToken: token)
             .catchError((e) => throw CancelToken.isCancel(e)),
         throwsA(isTrue));
   });

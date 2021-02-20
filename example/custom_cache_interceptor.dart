@@ -25,7 +25,7 @@ class CacheInterceptor extends Interceptor {
   }
 
   @override
-  Future onError(WebError e) async {
+  Future onError(Fault e) async {
     print('onError: $e');
   }
 }

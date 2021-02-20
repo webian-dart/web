@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
-import '../Web.dart';
+import '../web.dart';
 import 'client_adapters/http_client_adapter.dart';
 import 'data/transformer.dart';
+import 'fault.dart';
 import 'headers.dart';
 import 'interceptors/interceptor.dart';
 import 'options/options.dart';
@@ -292,9 +293,9 @@ abstract class WebMixin implements Web {
     }
     return err.then<Response<T>>((v) {
       // transform 'success' to 'error'
-      throw assureWebError(v);
+      throw assureFault(v);
     }, onError: (e) {
-      throw assureWebError(e);
+      throw assureFault(e);
     });
   }
 
@@ -492,7 +493,7 @@ abstract class WebMixin implements Web {
     ProgressCallback? onReceiveProgress,
   }) async {
     if (_closed) {
-      throw WebError(error: "Web can't establish new connection after closed.");
+      throw Fault(error: "Web can't establish new connection after closed.");
     }
     options ??= Options();
     if (options is RequestOptions) {
@@ -537,7 +538,7 @@ abstract class WebMixin implements Web {
                   if (!request) data.request = data.request ?? requestOptions;
                   return interceptor(data).then((e) => e ?? data);
                 } else {
-                  throw assureWebError(data, requestOptions);
+                  throw assureFault(data, requestOptions);
                 }
               });
             }),
@@ -555,10 +556,9 @@ abstract class WebMixin implements Web {
       return (err) {
         return checkIfNeedEnqueue(interceptors.errorLock, () {
           if (err is! Response) {
-            return errInterceptor(assureWebError(err, requestOptions))
-                .then((e) {
+            return errInterceptor(assureFault(err, requestOptions)).then((e) {
               if (e is! Response) {
-                throw assureWebError(e ?? err, requestOptions);
+                throw assureFault(e ?? err, requestOptions);
               }
               return e;
             });
@@ -593,12 +593,12 @@ abstract class WebMixin implements Web {
       future = future.catchError(_errorInterceptorWrapper(interceptor.onError));
     });
 
-    // Normalize errors, we convert error to the WebError
+    // Normalize errors, we convert error to the Fault
     return future.then<Response<T>>((data) {
       return assureResponse<T>(data);
     }).catchError((err) {
       if (err == null || _isErrorOrException(err)) {
-        throw assureWebError(err, requestOptions);
+        throw assureFault(err, requestOptions);
       }
       return assureResponse<T>(err, requestOptions);
     });
@@ -648,14 +648,14 @@ abstract class WebMixin implements Web {
         return checkIfNeedEnqueue(interceptors.responseLock, () => ret)
             as Response<T>;
       } else {
-        throw WebError(
+        throw Fault(
           response: ret,
           error: 'Http status error [${responseBody.statusCode}]',
-          type: WebErrorType.RESPONSE,
+          type: FaultType.RESPONSE,
         );
       }
     } catch (e) {
-      throw assureWebError(e, options);
+      throw assureFault(e, options);
     }
   }
 
@@ -749,10 +749,10 @@ abstract class WebMixin implements Web {
       if (options.sendTimeout != null && options.sendTimeout! > 0) {
         byteStream.timeout(Duration(milliseconds: options.sendTimeout!),
             onTimeout: (sink) {
-          sink.addError(WebError(
+          sink.addError(Fault(
             request: options,
             error: 'Sending timeout[${options.connectTimeout}ms]',
-            type: WebErrorType.SEND_TIMEOUT,
+            type: FaultType.SEND_TIMEOUT,
           ));
           sink.close();
         });
@@ -814,15 +814,15 @@ abstract class WebMixin implements Web {
     }
   }
 
-  WebError assureWebError(err, [RequestOptions? requestOptions]) {
-    WebError WebError;
-    if (err is WebError) {
-      WebError = err;
+  Fault assureFault(err, [RequestOptions? requestOptions]) {
+    Fault fault;
+    if (err is Fault) {
+      fault = err;
     } else {
-      WebError = WebError(error: err);
+      fault = Fault(error: err);
     }
-    WebError.request = WebError.request ?? requestOptions;
-    return WebError;
+    fault.request = fault.request ?? requestOptions;
+    return fault;
   }
 
   Response<T> assureResponse<T>(response, [RequestOptions? requestOptions]) {

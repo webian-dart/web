@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../Web_error.dart';
+import '../fault.dart';
 import '../headers.dart';
 import '../requests/cancel_token.dart';
 import '../requests/requests.dart';
@@ -14,13 +14,13 @@ class SaveDownloadTask {
   final ProgressCallback? onProgress;
   final CancelToken? cancelToken;
   final bool deleteOnError;
-  final Function(dynamic) convertToWebError;
+  final Function(dynamic) convertToFault;
 
   SaveDownloadTask({
     required this.savePath,
     required this.lengthHeader,
     required this.deleteOnError,
-    required this.convertToWebError,
+    required this.convertToFault,
     this.onProgress,
     this.cancelToken,
   });
@@ -80,7 +80,7 @@ class SaveDownloadTask {
           try {
             await subscription.cancel();
           } finally {
-            completer.completeError(convertToWebError(err));
+            completer.completeError(convertToFault(err));
           }
         });
       },
@@ -91,14 +91,14 @@ class SaveDownloadTask {
           await raf.close();
           completer.complete(response);
         } catch (e) {
-          completer.completeError(convertToWebError(e));
+          completer.completeError(convertToFault(e));
         }
       },
       onError: (e) async {
         try {
           await _closeAndDelete();
         } finally {
-          completer.completeError(convertToWebError(e));
+          completer.completeError(convertToFault(e));
         }
       },
       cancelOnError: true,
@@ -117,11 +117,11 @@ class SaveDownloadTask {
         await subscription.cancel();
         await _closeAndDelete();
         if (err is TimeoutException) {
-          throw WebError(
+          throw Fault(
             request: response.request,
             error:
                 'Receiving data timeout[${response.request?.receiveTimeout}ms]',
-            type: WebErrorType.RECEIVE_TIMEOUT,
+            type: FaultType.RECEIVE_TIMEOUT,
           );
         } else {
           throw err;

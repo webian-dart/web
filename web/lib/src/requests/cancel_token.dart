@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../Web_error.dart';
+import '../fault.dart';
 
 /// You can cancel a request by using a cancel token.
 /// One token can be shared between different requests.
@@ -12,15 +12,15 @@ class CancelToken {
   }
 
   /// Whether is throw by [cancel]
-  static bool isCancel(WebError e) {
-    return e.type == WebErrorType.CANCEL;
+  static bool isCancel(Fault e) {
+    return e.type == FaultType.CANCEL;
   }
 
   /// If request have been canceled, save the cancel Error.
-  WebError? _cancelError;
+  Fault? _cancelError;
 
   /// If request have been canceled, save the cancel Error.
-  WebError? get cancelError => _cancelError;
+  Fault? get cancelError => _cancelError;
 
   late Completer _completer;
 
@@ -32,7 +32,7 @@ class CancelToken {
 
   /// Cancel the request
   void cancel([dynamic reason]) {
-    _cancelError = WebError(type: WebErrorType.CANCEL, error: reason);
+    _cancelError = Fault(type: FaultType.CANCEL, error: reason);
     _completer.complete();
   }
 }

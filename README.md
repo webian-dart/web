@@ -263,7 +263,7 @@ The Options class describes the http request information and configuration. Each
   int connectTimeout;
 
    ///  Whenever more than [receiveTimeout] (in milliseconds) passes between two events from response stream,
-  ///  [Web] will throw the [WebError] with [WebErrorType.RECEIVE_TIMEOUT].
+  ///  [Web] will throw the [Fault] with [FaultType.RECEIVE_TIMEOUT].
   ///  Note: This is not the receiving time limitation.
   int receiveTimeout;
 
@@ -355,13 +355,13 @@ web.interceptors.add(InterceptorsWrapper(
      // If you want to resolve the request with some custom data，
      // you can return a `Response` object or return `web.resolve(data)`.
      // If you want to reject the request with a error message,
-     // you can return a `WebError` object or return `web.reject(errMsg)`
+     // you can return a `Fault` object or return `web.reject(errMsg)`
     },
     onResponse:(Response response) async {
      // Do something with response data
      return response; // continue
     },
-    onError: (WebError e) async {
+    onError: (Fault e) async {
      // Do something with response error
      return  e;//continue
     }
@@ -385,7 +385,7 @@ class CustomInterceptors extends InterceptorsWrapper {
     return super.onResponse(response);
   }
   @override
-  Future onError(WebError err) {
+  Future onError(Fault err) {
     print("ERROR[${err?.response?.statusCode}] => PATH: ${err?.request?.path}");
     return super.onError(err);
   }
@@ -395,7 +395,7 @@ class CustomInterceptors extends InterceptorsWrapper {
 
 ### Resolve and reject the request
 
-In all interceptors, you can interfere with their execution flow. If you want to resolve the request/response with some custom data，you can return a `Response` object or return `web.resolve(data)`.  If you want to reject the request/response with a error message, you can return a `WebError` object or return `web.reject(errMsg)` .
+In all interceptors, you can interfere with their execution flow. If you want to resolve the request/response with some custom data，you can return a `Response` object or return `web.resolve(data)`.  If you want to reject the request/response with a error message, you can return a `Fault` object or return `web.reject(errMsg)` .
 
 ```dart
 web.interceptors.add(InterceptorsWrapper(
@@ -484,17 +484,17 @@ You can custom interceptor by extending the `Interceptor` class. There is an exa
 
 ## Cookie Manager
 
-[web_cookie_manager](https://github.com/tautalos/web/tree/master/plugins/cookie_manager) package is a cookie manager for Web.
+[cookie_manager](https://github.com/tautalos/web/tree/master/plugins/cookie_manager) package is a cookie manager for Web.
 
 ## Handling Errors
 
-When a error occurs, Web will wrap the `Error/Exception` to a `WebError`:
+When a error occurs, Web will wrap the `Error/Exception` to a `Fault`:
 
 ```dart
 try {
     //404
     await web.get("https://wendux.github.io/xsddddd");
-} on WebError catch(e) {
+} on Fault catch(e) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx and is also not 304.
     if(e.response) {
@@ -509,7 +509,7 @@ try {
 }
 ```
 
-### WebError scheme
+### Fault scheme
 
 ```dart
  {
@@ -520,18 +520,18 @@ try {
   /// Error descriptions.
   String message;
 
-  WebErrorType type;
+  FaultType type;
 
   /// The original error/exception object; It's usually not null when `type`
-  /// is WebErrorType.DEFAULT
+  /// is FaultType.DEFAULT
   dynamic error;
 }
 ```
 
-### WebErrorType
+### FaultType
 
 ```dart
-enum WebErrorType {
+enum FaultType {
   /// When opening  url timeout, it occurs.
   CONNECT_TIMEOUT,
 
@@ -545,7 +545,7 @@ enum WebErrorType {
   CANCEL,
 
   /// Default error type, Some other Error. In this case, you can
-  /// read the WebError.error if it is not null.
+  /// read the Fault.error if it is not null.
   DEFAULT,
 }
 ```

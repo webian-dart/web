@@ -33,12 +33,12 @@ class RequestConfig {
   Map<String, dynamic> headers;
 
   /// Timeout in milliseconds for sending data.
-  /// [Web] will throw the [WebError] with [WebErrorType.SEND_TIMEOUT] type
+  /// [Web] will throw the [Fault] with [FaultType.SEND_TIMEOUT] type
   ///  when time out.
   int? sendTimeout;
 
   ///  Timeout in milliseconds for receiving data.
-  ///  [Web] will throw the [WebError] with [WebErrorType.RECEIVE_TIMEOUT] type
+  ///  [Web] will throw the [Fault] with [FaultType.RECEIVE_TIMEOUT] type
   ///  when time out.
   ///
   /// [0] meanings no timeout limit.

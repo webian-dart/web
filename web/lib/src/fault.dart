@@ -1,7 +1,7 @@
 import 'options/request_options.dart';
 import 'responses/response.dart';
 
-enum WebErrorType {
+enum FaultType {
   /// It occurs when url is opened timeout.
   CONNECT_TIMEOUT,
 
@@ -18,16 +18,16 @@ enum WebErrorType {
   CANCEL,
 
   /// Default error type, Some other Error. In this case, you can
-  /// use the WebError.error if it is not null.
+  /// use the Fault.error if it is not null.
   DEFAULT,
 }
 
-/// WebError describes the error info  when request failed.
-class WebError implements Exception {
-  WebError({
+/// Fault describes the error info  when request failed.
+class Fault implements Exception {
+  Fault({
     this.request,
     this.response,
-    this.type = WebErrorType.DEFAULT,
+    this.type = FaultType.DEFAULT,
     this.error,
   });
 
@@ -38,17 +38,17 @@ class WebError implements Exception {
   /// the http server, for example, occurring a dns error, network is not available.
   Response? response;
 
-  WebErrorType type;
+  FaultType type;
 
   /// The original error/exception object; It's usually not null when `type`
-  /// is WebErrorType.DEFAULT
+  /// is FaultType.DEFAULT
   dynamic? error;
 
   String get message => (error?.toString() ?? '');
 
   @override
   String toString() {
-    var msg = 'WebError [$type]: $message';
+    var msg = 'Fault [$type]: $message';
     if (error is Error) {
       msg += '\n${error.stackTrace}';
     }

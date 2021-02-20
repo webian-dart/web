@@ -9,7 +9,7 @@ void main() async {
   web.options.baseUrl = "http://httpbin.org/";
   web.interceptors.add(InterceptorsWrapper(onResponse: (Response response) {
     return response.data["data"]; //
-  }, onError: (WebError e) async {
+  }, onError: (Fault e) async {
     if (e.response != null) {
       switch (e.response!.request!.path) {
         case URL_NOT_FIND:
@@ -31,7 +31,7 @@ void main() async {
   assert(response.data["headers"] is Map);
   try {
     await web.get(URL_NOT_FIND);
-  } on WebError catch (e) {
+  } on Fault catch (e) {
     assert(e.response!.statusCode == 404);
   }
   response = await web.get(URL_NOT_FIND + "1");
@@ -40,7 +40,7 @@ void main() async {
   assert(response.data == "fake data");
   try {
     await web.get(URL_NOT_FIND + "3");
-  } on WebError catch (e) {
+  } on Fault catch (e) {
     assert(e.message == 'custom error info [404]');
   }
 }

@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import '../../Web.dart';
-import '../Web.dart';
-import '../Web_error.dart';
+import '../../web.dart';
 import '../client_adapters/default_http_client_adapter.dart';
+import '../fault.dart';
 import '../headers.dart';
 import '../options/options.dart';
 import '../requests/cancel_token.dart';
 import '../requests/requests.dart';
 import '../responses/response.dart';
 import '../responses/response_body.dart';
+import '../web_mixin.dart';
 import 'save_download_task.dart';
 
 Web createWeb([BaseOptions? options]) => WebForNative(options);
@@ -88,7 +88,7 @@ class WebForNative with WebMixin implements Web {
             lengthHeader: lengthHeader,
             onProgress: onReceiveProgress,
             deleteOnError: deleteOnError,
-            convertToWebError: assureWebError)
+            convertToFault: assureFault)
         .start(response);
     return listenCancelForAsyncTask(cancelToken, future);
   }
@@ -107,16 +107,16 @@ class WebForNative with WebMixin implements Web {
         cancelToken: cancelToken ?? CancelToken(),
       );
       return res..headers = Headers.fromMap(res.data?.headers ?? const {});
-    } on WebError catch (e) {
-      await _onWebError(e);
+    } on Fault catch (e) {
+      await _onFault(e);
       rethrow;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future _onWebError(WebError error) async {
-    if (error.type == WebErrorType.RESPONSE) {
+  Future _onFault(Fault error) async {
+    if (error.type == FaultType.RESPONSE) {
       if (error.response?.request?.receiveDataWhenStatusError == true) {
         var options = (error.response?.request ?? EmptyRequestOptions())
           ..responseType = ResponseType.json;

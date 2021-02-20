@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import '../Web_error.dart';
+import '../fault.dart';
 import '../options/request_options.dart';
 import '../requests/redirect_record.dart';
 import '../responses/response_body.dart';
@@ -146,10 +146,10 @@ class DefaultHttpClientAdapter implements HttpClientAdapter {
   }
 
   void _throwConnectingTimeout(RequestOptions options) {
-    throw WebError(
+    throw Fault(
       request: options,
       error: 'Connecting timed out [${options.connectTimeout}ms]',
-      type: WebErrorType.CONNECT_TIMEOUT,
+      type: FaultType.CONNECT_TIMEOUT,
     );
   }
 }
