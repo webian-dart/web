@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dio/dio.dart';
-import 'package:dio/adapter.dart';
+
+import 'package:web/adapter.dart';
+import 'package:web/web.dart';
 
 void showProgress(received, total) {
   if (total != -1) {
@@ -58,11 +59,11 @@ Future<FormData> FormData3() async {
 /// FormData will create readable "multipart/form-data" streams.
 /// It can be used to submit forms and file uploads to http server.
 main() async {
-  var dio = Dio();
-  dio.options.baseUrl = "http://localhost:3000/";
-  dio.interceptors.add(LogInterceptor());
-  //dio.interceptors.add(LogInterceptor(requestBody: true));
-  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+  var web = Web();
+  web.options.baseUrl = "http://localhost:3000/";
+  web.interceptors.add(LogInterceptor());
+  //web.interceptors.add(LogInterceptor(requestBody: true));
+  (web.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
       (HttpClient client) {
     client.findProxy = (uri) {
       //proxy all request to localhost:8888
@@ -82,7 +83,7 @@ main() async {
   var t = await FormData3();
   print(utf8.decode(await t.readAsBytes()));
 
-  response = await dio.post(
+  response = await web.post(
     //"/upload",
     "http://localhost:3000/upload",
     data: await FormData3(),

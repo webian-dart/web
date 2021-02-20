@@ -1,10 +1,10 @@
-import 'package:dio/dio.dart';
-import 'package:dio_http2_adapter/dio_http2_adapter.dart';
 import 'package:test/test.dart';
+import 'package:web/web.dart';
+import 'package:web_http2_adapter/web_http2_adapter.dart';
 
 void main() {
   test('adds one to input values', () async {
-    var dio = Dio()
+    var web = Web()
       ..options.baseUrl = "https://www.google.com/"
       ..interceptors.add(LogInterceptor())
       ..httpClientAdapter = Http2Adapter(
@@ -15,9 +15,9 @@ void main() {
       );
 
     Response<String> response;
-    response = await dio.get("?xx=6");
+    response = await web.get("?xx=6");
     assert(response.statusCode == 200);
-    response = await dio.get(
+    response = await web.get(
       "nkjnjknjn.html",
       options: Options(validateStatus: (status) => true),
     );
@@ -25,13 +25,13 @@ void main() {
   });
 
   test("request with payload", () async {
-    final dio = Dio()
+    final web = Web()
       ..options.baseUrl = "https://postman-echo.com/"
       ..httpClientAdapter = Http2Adapter(ConnectionManager(
         idleTimeout: 10,
       ));
 
-    final res = await dio.post("post", data: "TEST");
+    final res = await web.post("post", data: "TEST");
     assert(res.data["data"] == "TEST");
   });
 }

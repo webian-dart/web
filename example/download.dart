@@ -1,28 +1,28 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 // In this example we download a image and listen the downloading progress.
 main() async {
-  var dio = Dio();
-  dio.interceptors.add(LogInterceptor());
+  var web = Web();
+  web.interceptors.add(LogInterceptor());
   // This is big file(about 200M)
   //   var url = "http://download.dcloud.net.cn/HBuilder.9.0.2.macosx_64.dmg";
 
   var url =
-      "https://cdn.jsdelivr.net/gh/flutterchina/flutter-in-action@1.0/docs/imgs/book.jpg";
+      "https://cdn.jsdelivr.net/gh/tautalos/flutter-in-action@1.0/docs/imgs/book.jpg";
 
   // var url = "https://www.google.com/img/bdlogo.gif";
-  await download1(dio, url, "./example/book.jpg");
-  await download1(dio, url, (Headers headers) => "./example/book1.jpg");
-  await download2(dio, url, "./example/book2.jpg");
+  await download1(web, url, "./example/book.jpg");
+  await download1(web, url, (Headers headers) => "./example/book1.jpg");
+  await download2(web, url, "./example/book2.jpg");
 }
 
-Future download1(Dio dio, String url, savePath) async {
+Future download1(Web web, String url, savePath) async {
   CancelToken cancelToken = CancelToken();
   try {
-    await dio.download(url, savePath,
+    await web.download(url, savePath,
         onReceiveProgress: showDownloadProgress, cancelToken: cancelToken);
   } catch (e) {
     print(e);
@@ -30,9 +30,9 @@ Future download1(Dio dio, String url, savePath) async {
 }
 
 //Another way to downloading small file
-Future download2(Dio dio, String url, String savePath) async {
+Future download2(Web web, String url, String savePath) async {
   try {
-    Response response = await dio.get(
+    Response response = await web.get(
       url,
       onReceiveProgress: showDownloadProgress,
       //Received data with List<int>

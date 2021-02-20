@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 /// If the request data is a `List` type, the [DefaultTransformer] will send data
 /// by calling its `toString()` method. However, normally the List object is
@@ -11,7 +11,7 @@ class MyTransformer extends DefaultTransformer {
   @override
   Future<String> transformRequest(RequestOptions options) async {
     if (options.data is List<String>) {
-      throw DioError(error: "Can't send List to sever directly");
+      throw WebError(error: "Can't send List to sever directly");
     } else {
       return super.transformRequest(options);
     }
@@ -29,15 +29,15 @@ class MyTransformer extends DefaultTransformer {
 }
 
 void main() async {
-  var dio = Dio();
+  var web = Web();
   // Use custom Transformer
-  dio.transformer = MyTransformer();
+  web.transformer = MyTransformer();
 
-  final response = await dio.get("https://www.google.com");
+  final response = await web.get("https://www.google.com");
   print(response.request!.extra["self"]);
 
   try {
-    await dio.post("https://www.google.com", data: ["1", "2"]);
+    await web.post("https://www.google.com", data: ["1", "2"]);
   } catch (e) {
     print(e);
   }

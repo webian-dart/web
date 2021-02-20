@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:http2/http2.dart';
+import 'package:web/web.dart';
 
 part 'client_setting.dart';
 part 'connection_manager.dart';
 part 'connection_manager_imp.dart';
 
-/// A Dio HttpAdapter which implements Http/2.0.
+/// A Web HttpAdapter which implements Http/2.0.
 class Http2Adapter extends HttpClientAdapter {
   final ConnectionManager _connectionMgr;
 

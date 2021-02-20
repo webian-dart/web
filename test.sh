@@ -1,4 +1,4 @@
-cd dio
+cd web
 flutter test --coverage .
 genhtml -o coverage coverage/lcov.info
 # Open in the default browser (mac):

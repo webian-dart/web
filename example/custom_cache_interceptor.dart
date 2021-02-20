@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 class CacheInterceptor extends Interceptor {
   CacheInterceptor();
@@ -25,20 +25,20 @@ class CacheInterceptor extends Interceptor {
   }
 
   @override
-  Future onError(DioError e) async {
+  Future onError(WebError e) async {
     print('onError: $e');
   }
 }
 
 main() async {
-  var dio = Dio();
-  dio.options.baseUrl = "https://google.com";
-  dio.interceptors
+  var web = Web();
+  web.options.baseUrl = "https://google.com";
+  web.interceptors
     ..add(CacheInterceptor())
     ..add(LogInterceptor(requestHeader: false, responseHeader: false));
 
-  await dio.get("/"); // second request
-  await dio.get("/"); // Will hit cache
+  await web.get("/"); // second request
+  await web.get("/"); // Will hit cache
   // Force refresh
-  await dio.get("/", options: Options(extra: {'refresh': true}));
+  await web.get("/", options: Options(extra: {'refresh': true}));
 }

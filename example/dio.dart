@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 void main() async {
-  var dio = Dio();
-  dio.options
+  var web = Web();
+  web.options
     ..baseUrl = "http://httpbin.org/"
     ..connectTimeout = 5000 //5s
     ..receiveTimeout = 5000
@@ -12,35 +12,35 @@ void main() async {
       return (status ?? 0) > 0;
     }
     ..headers = {
-      HttpHeaders.userAgentHeader: 'dio',
+      HttpHeaders.userAgentHeader: 'web',
       'common-header': 'xx',
     };
 
-// Or you can create dio instance and config it as follow:
-//  var dio = Dio(BaseOptions(
+// Or you can create web instance and config it as follow:
+//  var web = Web(BaseOptions(
 //    baseUrl: "http://www.dtworkroom.com/doris/1/2.0.0/",
 //    connectTimeout: 5000,
 //    receiveTimeout: 5000,
 //    headers: {
-//      HttpHeaders.userAgentHeader: 'dio',
+//      HttpHeaders.userAgentHeader: 'web',
 //      'common-header': 'xx',
 //    },
 //  ));
 
-  dio.interceptors
+  web.interceptors
     ..add(InterceptorsWrapper(
       onRequest: (Options options) {
         // return ds.resolve( Response(data:"xxx"));
-        // return ds.reject( DioError(message: "eh"));
+        // return ds.reject( WebError(message: "eh"));
         return options;
       },
     ))
     ..add(LogInterceptor(responseBody: false)); //Open log;
 
-  Response response = await dio.get("https://www.google.com/");
+  Response response = await web.get("https://www.google.com/");
 
   // Download a file
-  response = await dio.download(
+  response = await web.download(
     "https://www.google.com/",
     "./example/xx.html",
     queryParameters: {"a": 1},
@@ -61,11 +61,11 @@ void main() async {
   });
 
   // Send FormData
-  response = await dio.post("/test", data: formData);
+  response = await web.post("/test", data: formData);
   print(response);
 
   // post data with "application/x-www-form-urlencoded" format
-  response = await dio.post(
+  response = await web.post(
     "/test",
     data: {
       "id": 8,

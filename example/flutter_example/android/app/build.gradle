@@ -32,8 +32,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "club.flutterchina.flutterexample"
+        // TODO: Specify your own unique Application ID (https://developer.android.com/stuweb/build/application-id.html).
+        applicationId "club.tautalos.flutterexample"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode flutterVersionCode.toInteger()

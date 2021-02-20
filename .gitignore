@@ -12,12 +12,12 @@ pubspec.lock
 doc/api/
 .cookies/
 
-dio/.packages
-dio/.dart_tool/
-dio/.pub/
-dio/.idea/
-dio/.exampl
-dio/coverage
+web/.packages
+web/.dart_tool/
+web/.pub/
+web/.idea/
+web/.exampl
+web/coverage
 
 # plugins
 plugins/cookie_manager/.packages

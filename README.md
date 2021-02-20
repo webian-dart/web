@@ -2,7 +2,7 @@ Language: [English](README.md)
 
 # Web
 
-This project is a fork of Dio for my own usage.
+This project is a fork of Web for my own usage.
 
 This fork's goals are:
 
@@ -10,11 +10,11 @@ This fork's goals are:
 2. Done Bring Cookie jar in
 3. WIP - Refactor code applying Clean Code principles.
 
-- So in essence, not to change or add functionality but continue the upgrade started by/in https://github.com/harsimranmaan/dio on nullsafety branch.
+- So in essence, not to change or add functionality but continue the upgrade started by/in https://github.com/harsimranmaan/web on nullsafety branch.
 
 
 /////////////
-Following text is as on Dio project at the time of forking.
+Following text is as on Web project at the time of forking.
 ////////////
 
 A powerful Http client for Dart, which supports Interceptors, Global configuration, FormData, Request Cancellation, File downloading, Timeout etc. 
@@ -25,16 +25,16 @@ A powerful Http client for Dart, which supports Interceptors, Global configurati
 
 ```yaml
 dependencies:
-  dio: not available
+  web: not available
 ```
 
 ### Super simple to use
 
 ```dart
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 void getHttp() async {
   try {
-    Response response = await Dio().get("http://www.google.com");
+    Response response = await Web().get("http://www.google.com");
     print(response);
   } catch (e) {
     print(e);
@@ -47,7 +47,7 @@ void getHttp() async {
 
 - [Examples](#examples)
 
-- [Dio APIs](#dio-apis)
+- [Web APIs](#web-apis)
 
 - [Request Options](#request-options)
 
@@ -73,7 +73,7 @@ void getHttp() async {
 
 - [Cancellation](#cancellation)
 
-- [Extends Dio class](#extends-dio-class)
+- [Extends Web class](#extends-web-class)
 
 - [Http2 support](#http2-support )
 
@@ -87,36 +87,36 @@ Performing a `GET` request:
 
 ```dart
 Response response;
-Dio dio = new Dio();
-response = await dio.get("/test?id=12&name=wendu");
+Web web = new Web();
+response = await web.get("/test?id=12&name=wendu");
 print(response.data.toString());
 // Optionally the request above could also be done as
-response = await dio.get("/test", queryParameters: {"id": 12, "name": "wendu"});
+response = await web.get("/test", queryParameters: {"id": 12, "name": "wendu"});
 print(response.data.toString());
 ```
 
 Performing a `POST` request:
 
 ```dart
-response = await dio.post("/test", data: {"id": 12, "name": "wendu"});
+response = await web.post("/test", data: {"id": 12, "name": "wendu"});
 ```
 
 Performing multiple concurrent requests:
 
 ```dart
-response = await Future.wait([dio.post("/info"), dio.get("/token")]);
+response = await Future.wait([web.post("/info"), web.get("/token")]);
 ```
 
 Downloading a file:
 
 ```dart
-response = await dio.download("https://www.google.com/", "./xx.html");
+response = await web.download("https://www.google.com/", "./xx.html");
 ```
 
 Get response stream:
 
 ```dart
-Response<ResponseBody> rs = await Dio().get<ResponseBody>(url,
+Response<ResponseBody> rs = await Web().get<ResponseBody>(url,
  options: Options(responseType: ResponseType.stream), // set responseType to `stream`
 );
 print(rs.data.stream); //response stream
@@ -125,7 +125,7 @@ print(rs.data.stream); //response stream
 Get response with bytes:
 
 ```dart
-Response<List<int>> rs = await Dio().get<List<int>>(url,
+Response<List<int>> rs = await Web().get<List<int>>(url,
  options: Options(responseType: ResponseType.bytes), // // set responseType to `bytes`
 );
 print(rs.data); // List<int>
@@ -138,7 +138,7 @@ FormData formData = new FormData.fromMap({
     "name": "wendux",
     "age": 25,
   });
-response = await dio.post("/info", data: formData);
+response = await web.post("/info", data: formData);
 ```
 
 Uploading multiple files to server by FormData:
@@ -153,13 +153,13 @@ FormData.fromMap({
       await MultipartFile.fromFile("./text2.txt", filename: "text2.txt"),
     ]
 });
-response = await dio.post("/info", data: formData);
+response = await web.post("/info", data: formData);
 ```
 
 Listening the uploading progress:
 
 ```dart
-response = await dio.post(
+response = await web.post(
   "http://www.dtworkroom.com/doris/1/2.0.0/test",
   data: {"aa": "bb" * 22},
   onSendProgress: (int sent, int total) {
@@ -172,7 +172,7 @@ Post binary data by Stream:
 ```dart
 // Binary data
 List<int> postData = <int>[...];
-await dio.post(
+await web.post(
   url,
   data: Stream.fromIterable(postData.map((e) => [e])), //create a Stream<List<int>>
   options: Options(
@@ -183,34 +183,34 @@ await dio.post(
 );
 ```
 
-…you can find all examples code [here](https://github.com/flutterchina/dio/tree/master/example).
+…you can find all examples code [here](https://github.com/tautalos/web/tree/master/example).
 
 
 
-## Dio APIs
+## Web APIs
 
 ### Creating an instance and set default configs.
 
-You can create instance of Dio with an optional `BaseOptions` object:
+You can create instance of Web with an optional `BaseOptions` object:
 
 ```dart
-Dio dio = new Dio(); // with default Options
+Web web = new Web(); // with default Options
 
 // Set default configs
-dio.options.baseUrl = "https://www.xx.com/api";
-dio.options.connectTimeout = 5000; //5s
-dio.options.receiveTimeout = 3000;
+web.options.baseUrl = "https://www.xx.com/api";
+web.options.connectTimeout = 5000; //5s
+web.options.receiveTimeout = 3000;
 
-// or new Dio with a BaseOptions instance.
+// or new Web with a BaseOptions instance.
 BaseOptions options = new BaseOptions(
     baseUrl: "https://www.xx.com/api",
     connectTimeout: 5000,
     receiveTimeout: 3000,
 );
-Dio dio = new Dio(options);
+Web web = new Web(options);
 ```
 
-The core API in Dio instance is:
+The core API in Web instance is:
 
 **Future<Response> request(String path, {data,Map queryParameters, Options options,CancelToken cancelToken, ProgressCallback onSendProgress,
     ProgressCallback onReceiveProgress)**
@@ -246,7 +246,7 @@ For convenience aliases have been provided for all supported request methods.
 
 ## Request Options
 
-The Options class describes the http request information and configuration. Each Dio instance has a base config for all requests maked by itself, and we can override the base config with [Options] when make a single request.  The  [BaseOptions] declaration as follows:
+The Options class describes the http request information and configuration. Each Web instance has a base config for all requests maked by itself, and we can override the base config with [Options] when make a single request.  The  [BaseOptions] declaration as follows:
 
 ```dart
 {
@@ -263,7 +263,7 @@ The Options class describes the http request information and configuration. Each
   int connectTimeout;
 
    ///  Whenever more than [receiveTimeout] (in milliseconds) passes between two events from response stream,
-  ///  [Dio] will throw the [DioError] with [DioErrorType.RECEIVE_TIMEOUT].
+  ///  [Web] will throw the [WebError] with [WebErrorType.RECEIVE_TIMEOUT].
   ///  Note: This is not the receiving time limitation.
   int receiveTimeout;
 
@@ -276,14 +276,14 @@ The Options class describes the http request information and configuration. Each
 
   /// The request Content-Type. The default value is "application/json; charset=utf-8".
   /// If you want to encode request body with "application/x-www-form-urlencoded",
-  /// you can set [Headers.formUrlEncodedContentType], and [Dio]
+  /// you can set [Headers.formUrlEncodedContentType], and [Web]
   /// will automatically encode the request body.
   String contentType;
 
   /// [responseType] indicates the type of data that the server will respond with
   /// options which defined in [ResponseType] are `JSON`, `STREAM`, `PLAIN`.
   ///
-  /// The default value is `JSON`, dio will parse response string to json object automatically
+  /// The default value is `JSON`, web will parse response string to json object automatically
   /// when the content-type of response is "application/json".
   ///
   /// If you want to receive response data with binary bytes, for example,
@@ -306,7 +306,7 @@ The Options class describes the http request information and configuration. Each
 }
 ```
 
-There is a complete example [here](https://github.com/flutterchina/dio/blob/master/example/options.dart).
+There is a complete example [here](https://github.com/tautalos/web/blob/master/example/options.dart).
 
 ## Response Schema
 
@@ -336,7 +336,7 @@ The response for a request contains the following information.
 When request is succeed, you will receive the response as follows:
 
 ```dart
-Response response = await dio.get("https://www.google.com");
+Response response = await web.get("https://www.google.com");
 print(response.data);
 print(response.headers);
 print(response.request);
@@ -345,23 +345,23 @@ print(response.statusCode);
 
 ## Interceptors
 
-For each dio instance, We can add one or more interceptors, by which we can intercept requests or responses before they are handled by `then` or `catchError`.
+For each web instance, We can add one or more interceptors, by which we can intercept requests or responses before they are handled by `then` or `catchError`.
 
 ```dart
-dio.interceptors.add(InterceptorsWrapper(
+web.interceptors.add(InterceptorsWrapper(
     onRequest:(RequestOptions options) async {
      // Do something before request is sent
      return options; //continue
      // If you want to resolve the request with some custom data，
-     // you can return a `Response` object or return `dio.resolve(data)`.
+     // you can return a `Response` object or return `web.resolve(data)`.
      // If you want to reject the request with a error message,
-     // you can return a `DioError` object or return `dio.reject(errMsg)`
+     // you can return a `WebError` object or return `web.reject(errMsg)`
     },
     onResponse:(Response response) async {
      // Do something with response data
      return response; // continue
     },
-    onError: (DioError e) async {
+    onError: (WebError e) async {
      // Do something with response error
      return  e;//continue
     }
@@ -372,7 +372,7 @@ dio.interceptors.add(InterceptorsWrapper(
 Simple interceptor example:
 
 ```dart
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 class CustomInterceptors extends InterceptorsWrapper {
   @override
   Future onRequest(RequestOptions options) {
@@ -385,7 +385,7 @@ class CustomInterceptors extends InterceptorsWrapper {
     return super.onResponse(response);
   }
   @override
-  Future onError(DioError err) {
+  Future onError(WebError err) {
     print("ERROR[${err?.response?.statusCode}] => PATH: ${err?.request?.path}");
     return super.onError(err);
   }
@@ -395,15 +395,15 @@ class CustomInterceptors extends InterceptorsWrapper {
 
 ### Resolve and reject the request
 
-In all interceptors, you can interfere with their execution flow. If you want to resolve the request/response with some custom data，you can return a `Response` object or return `dio.resolve(data)`.  If you want to reject the request/response with a error message, you can return a `DioError` object or return `dio.reject(errMsg)` .
+In all interceptors, you can interfere with their execution flow. If you want to resolve the request/response with some custom data，you can return a `Response` object or return `web.resolve(data)`.  If you want to reject the request/response with a error message, you can return a `WebError` object or return `web.reject(errMsg)` .
 
 ```dart
-dio.interceptors.add(InterceptorsWrapper(
+web.interceptors.add(InterceptorsWrapper(
   onRequest:(RequestOptions options) {
-   return dio.resolve("fake data")
+   return web.resolve("fake data")
   },
 ));
-Response response = await dio.get("/test");
+Response response = await web.get("/test");
 print(response.data);//"fake data"
 ```
 
@@ -412,18 +412,18 @@ print(response.data);//"fake data"
 You can lock/unlock the interceptors by calling their `lock()`/`unlock` method. Once the request/response interceptor is locked, the incoming request/response will be added to a queue before they enter the interceptor, they will not be continued until the interceptor is unlocked.
 
 ```dart
-tokenDio = new Dio(); //Create a new instance to request the token.
-tokenDio.options = dio;
-dio.interceptors.add(InterceptorsWrapper(
+tokenWeb = new Web(); //Create a new instance to request the token.
+tokenWeb.options = web;
+web.interceptors.add(InterceptorsWrapper(
     onRequest:(Options options) async {
         // If no token, request token firstly and lock this interceptor
         // to prevent other request enter this interceptor.
-        dio.interceptors.requestLock.lock();
-        // We use a new Dio(to avoid dead lock) instance to request token.
-        Response response = await tokenDio.get("/token");
+        web.interceptors.requestLock.lock();
+        // We use a new Web(to avoid dead lock) instance to request token.
+        Response response = await tokenWeb.get("/token");
         //Set the token to headers
         options.headers["token"] = response.data["data"]["token"];
-        dio.interceptors.requestLock.unlock();
+        web.interceptors.requestLock.unlock();
         return options; //continue
     }
 ));
@@ -433,33 +433,33 @@ You can clean the waiting queue by calling `clear()`;
 
 ### aliases
 
-When the **request** interceptor is locked, the incoming request will pause, this is equivalent to we locked the current dio instance, Therefore, Dio provied the two aliases for the `lock/unlock` of **request** interceptors.
+When the **request** interceptor is locked, the incoming request will pause, this is equivalent to we locked the current web instance, Therefore, Web provied the two aliases for the `lock/unlock` of **request** interceptors.
 
-**dio.lock() ==  dio.interceptors.requestLock.lock()**
+**web.lock() ==  web.interceptors.requestLock.lock()**
 
-**dio.unlock() ==  dio.interceptors.requestLock.unlock()**
+**web.unlock() ==  web.interceptors.requestLock.unlock()**
 
-**dio.clear() ==  dio.interceptors.requestLock.clear()**
+**web.clear() ==  web.interceptors.requestLock.clear()**
 
 ### Example
 
 Because of security reasons, we need all the requests to set up a csrfToken in the header, if csrfToken does not exist, we need to request a csrfToken first, and then perform the network request, because the request csrfToken progress is asynchronous, so we need to execute this async request in request interceptor. The code is as follows:
 
 ```dart
-dio.interceptors.add(InterceptorsWrapper(
+web.interceptors.add(InterceptorsWrapper(
     onRequest: (Options options) async {
         print('send request：path:${options.path}，baseURL:${options.baseUrl}');
         if (csrfToken == null) {
             print("no token，request token firstly...");
-            //lock the dio.
-            dio.lock();
-            return tokenDio.get("/token").then((d) {
+            //lock the web.
+            web.lock();
+            return tokenWeb.get("/token").then((d) {
                 options.headers["csrfToken"] = csrfToken = d.data['data']['token'];
                 print("request token succeed, value: " + d.data['data']['token']);
                 print(
                     'continue to perform request：path:${options.path}，baseURL:${options.path}');
                 return options;
-            }).whenComplete(() => dio.unlock()); // unlock the dio
+            }).whenComplete(() => web.unlock()); // unlock the web
         } else {
             options.headers["csrfToken"] = csrfToken;
             return options;
@@ -468,33 +468,33 @@ dio.interceptors.add(InterceptorsWrapper(
 ));
 ```
 
-For complete codes click [here](https://github.com/flutterchina/dio/blob/master/example/interceptor_lock.dart).
+For complete codes click [here](https://github.com/tautalos/web/blob/master/example/interceptor_lock.dart).
 
 ### Log
 
 You can set  `LogInterceptor` to  print request/response log automaticlly, for example:
 
 ```dart
-dio.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
+web.interceptors.add(LogInterceptor(responseBody: false)); //开启请求日志
 ```
 
 ### Custom Interceptor
 
-You can custom interceptor by extending the `Interceptor` class. There is an example that implementing a simple cache policy: [custom cache interceptor](https://github.com/flutterchina/dio/blob/master/example/custom_cache_interceptor.dart).
+You can custom interceptor by extending the `Interceptor` class. There is an example that implementing a simple cache policy: [custom cache interceptor](https://github.com/tautalos/web/blob/master/example/custom_cache_interceptor.dart).
 
 ## Cookie Manager
 
-[dio_cookie_manager](https://github.com/flutterchina/dio/tree/master/plugins/cookie_manager) package is a cookie manager for Dio.  
+[web_cookie_manager](https://github.com/tautalos/web/tree/master/plugins/cookie_manager) package is a cookie manager for Web.
 
 ## Handling Errors
 
-When a error occurs, Dio will wrap the `Error/Exception` to a `DioError`:
+When a error occurs, Web will wrap the `Error/Exception` to a `WebError`:
 
 ```dart
 try {
     //404
-    await dio.get("https://wendux.github.io/xsddddd");
-} on DioError catch(e) {
+    await web.get("https://wendux.github.io/xsddddd");
+} on WebError catch(e) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx and is also not 304.
     if(e.response) {
@@ -509,7 +509,7 @@ try {
 }
 ```
 
-### DioError scheme
+### WebError scheme
 
 ```dart
  {
@@ -520,18 +520,18 @@ try {
   /// Error descriptions.
   String message;
 
-  DioErrorType type;
+  WebErrorType type;
 
   /// The original error/exception object; It's usually not null when `type`
-  /// is DioErrorType.DEFAULT
+  /// is WebErrorType.DEFAULT
   dynamic error;
 }
 ```
 
-### DioErrorType
+### WebErrorType
 
 ```dart
-enum DioErrorType {
+enum WebErrorType {
   /// When opening  url timeout, it occurs.
   CONNECT_TIMEOUT,
 
@@ -541,11 +541,11 @@ enum DioErrorType {
   /// When the server response, but with a incorrect status, such as 404, 503...
   RESPONSE,
 
-  /// When the request is cancelled, dio will throw a error with this type.
+  /// When the request is cancelled, web will throw a error with this type.
   CANCEL,
 
   /// Default error type, Some other Error. In this case, you can
-  /// read the DioError.error if it is not null.
+  /// read the WebError.error if it is not null.
   DEFAULT,
 }
 ```
@@ -554,19 +554,19 @@ enum DioErrorType {
 
 ## Using application/x-www-form-urlencoded format
 
-By default, Dio serializes request data(except String type) to `JSON`. To send data in the `application/x-www-form-urlencoded` format instead, you can :
+By default, Web serializes request data(except String type) to `JSON`. To send data in the `application/x-www-form-urlencoded` format instead, you can :
 
 ```dart
 //Instance level
-dio.options.contentType= Headers.formUrlEncodedContentType;
+web.options.contentType= Headers.formUrlEncodedContentType;
 //or works once
-dio.post("/info", data:{"id":5}, 
+web.post("/info", data:{"id":5},
          options: Options(contentType:Headers.formUrlEncodedContentType ));
 ```
 
 ## Sending FormData
 
-You can also send FormData with Dio, which will send data in the `multipart/form-data`, and it supports uploading files.
+You can also send FormData with Web, which will send data in the `multipart/form-data`, and it supports uploading files.
 
 ```dart
 FormData formData = FormData.fromMap({
@@ -574,10 +574,10 @@ FormData formData = FormData.fromMap({
     "age": 25,
     "file": await MultipartFile.fromFile("./text.txt",filename: "upload.txt")
 });
-response = await dio.post("/info", data: formData);
+response = await web.post("/info", data: formData);
 ```
 
-There is a complete example [here](https://github.com/flutterchina/dio/blob/master/example/formdata.dart).
+There is a complete example [here](https://github.com/tautalos/web/blob/master/example/formdata.dart).
 
 ### Multiple files upload
 
@@ -614,11 +614,11 @@ The upload key eventually becomes "files[]"，This is because many back-end serv
 
 ## Transformer
 
-`Transformer` allows changes to the request/response data before it is sent/received to/from the server. This is only applicable for request methods 'PUT', 'POST', and 'PATCH'. Dio has already implemented a `DefaultTransformer`, and as the default `Transformer`. If you want to customize the transformation of request/response data, you can provide a `Transformer` by your self, and replace the `DefaultTransformer` by setting the `dio.transformer`.
+`Transformer` allows changes to the request/response data before it is sent/received to/from the server. This is only applicable for request methods 'PUT', 'POST', and 'PATCH'. Web has already implemented a `DefaultTransformer`, and as the default `Transformer`. If you want to customize the transformation of request/response data, you can provide a `Transformer` by your self, and replace the `DefaultTransformer` by setting the `web.transformer`.
 
 ### In flutter
 
-If you use dio in flutter development, you'd better to decode json   in background with [compute] function.
+If you use web in flutter development, you'd better to decode json   in background with [compute] function.
 
 ```dart
 
@@ -634,51 +634,51 @@ parseJson(String text) {
 void main() {
   ...
   //Custom jsonDecodeCallback
-  (dio.transformer as DefaultTransformer).jsonDecodeCallback = parseJson;
+  (web.transformer as DefaultTransformer).jsonDecodeCallback = parseJson;
   runApp(MyApp());
 }
 ```
 
 ### Other Example
 
-There is an example for [customizing Transformer](https://github.com/flutterchina/dio/blob/master/example/transfomer.dart).
+There is an example for [customizing Transformer](https://github.com/tautalos/web/blob/master/example/transfomer.dart).
 
 ## HttpClientAdapter
 
-HttpClientAdapter is a bridge between Dio and HttpClient.
+HttpClientAdapter is a bridge between Web and HttpClient.
 
-Dio implements standard and friendly API  for developer.
+Web implements standard and friendly API  for developer.
 
 HttpClient: It is the real object that makes Http requests.
 
-We can use any HttpClient not just `dart:io:HttpClient` to make the Http request.  And  all we need is providing a `HttpClientAdapter`. The default HttpClientAdapter for Dio is `DefaultHttpClientAdapter`.
+We can use any HttpClient not just `dart:io:HttpClient` to make the Http request.  And  all we need is providing a `HttpClientAdapter`. The default HttpClientAdapter for Web is `DefaultHttpClientAdapter`.
 
 ```dart
-dio.httpClientAdapter = new DefaultHttpClientAdapter();
+web.httpClientAdapter = new DefaultHttpClientAdapter();
 ```
 
-[Here](https://github.com/flutterchina/dio/blob/master/example/adapter.dart) is a simple example to custom adapter. 
+[Here](https://github.com/tautalos/web/blob/master/example/adapter.dart) is a simple example to custom adapter.
 
 ### Using proxy
 
 `DefaultHttpClientAdapter` provide a callback to set proxy to `dart:io:HttpClient`, for example:
 
 ```dart
-import 'package:dio/dio.dart';
-import 'package:dio/adapter.dart';
+import 'package:web/web.dart';
+import 'package:web/adapter.dart';
 ...
-(dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
+(web.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
     // config the http client
     client.findProxy = (uri) {
         //proxy all request to localhost:8888
         return "PROXY localhost:8888";
     };
-    // you can also create a new HttpClient to dio
+    // you can also create a new HttpClient to web
     // return new HttpClient();
 };
 ```
 
-There is a complete example [here](https://github.com/flutterchina/dio/blob/master/example/proxy.dart).
+There is a complete example [here](https://github.com/tautalos/web/blob/master/example/proxy.dart).
 
 ### Https certificate verification
 
@@ -686,7 +686,7 @@ There are two ways  to verify the https certificate. Suppose the certificate for
 
 ```dart
 String PEM="XXXXX"; // certificate content
-(dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate  = (client) {
+(web.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate  = (client) {
     client.badCertificateCallback=(X509Certificate cert, String host, int port){
         if(cert.pem==PEM){ // Verify the certificate
             return true;
@@ -699,7 +699,7 @@ String PEM="XXXXX"; // certificate content
 Another way is creating a `SecurityContext` when create the `HttpClient`:
 
 ```dart
-(dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate  = (client) {
+(web.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate  = (client) {
     SecurityContext sc = new SecurityContext();
     //file is the path of certificate
     sc.setTrustedCertificates(file);
@@ -712,7 +712,7 @@ In this way,  the format of certificate must be PEM or PKCS12.
 
 ## Http2 support
 
-[dio_http2_adapter](https://github.com/flutterchina/dio/tree/master/plugins/http2_adapter) package is a Dio HttpClientAdapter which support Http/2.0 .
+[web_http2_adapter](https://github.com/tautalos/web/tree/master/plugins/http2_adapter) package is a Web HttpClientAdapter which support Http/2.0 .
 
 ## Cancellation
 
@@ -720,50 +720,50 @@ You can cancel a request using a *cancel token*. One token can be shared with mu
 
 ```dart
 CancelToken token = CancelToken();
-dio.get(url1, cancelToken: token);
-dio.get(url2, cancelToken: token);
+web.get(url1, cancelToken: token);
+web.get(url2, cancelToken: token);
 
 // cancel the requests with "cancelled" message.
 token.cancel("cancelled");
 ```
 
-There is a complete example [here](https://github.com/flutterchina/dio/blob/master/example/cancel_request.dart).
+There is a complete example [here](https://github.com/tautalos/web/blob/master/example/cancel_request.dart).
 
-## Extends Dio class
+## Extends Web class
 
-`Dio` is a abstract class with factory constructor，so we don't extend `Dio` class directy. For this purpose,  we can extend `DioForNative` or `DioForBrowser` instead, for example:
+`Web` is a abstract class with factory constructor，so we don't extend `Web` class directy. For this purpose,  we can extend `WebForNative` or `WebForBrowser` instead, for example:
 
 ```dart
-import 'package:dio/dio.dart';
-import 'package:dio/native_imp.dart'; //If in browser, import 'package:dio/browser_imp.dart'
+import 'package:web/web.dart';
+import 'package:web/native_imp.dart'; //If in browser, import 'package:web/browser_imp.dart'
 
-class Http extends DioForNative {
+class Http extends WebForNative {
   Http([BaseOptions options]):super(options){
     // do something
   }
 }
 ```
 
-We can also implement our Dio client:
+We can also implement our Web client:
 
 ```dart
-class MyDio with DioMixin implements Dio{
+class MyWeb with WebMixin implements Web{
   // ...
 }
 ```
 
 ## Copyright & License
 
-This open source project authorized by https://flutterchina.club , and the license is MIT.
+This open source project authorized by https://tautalos.club , and the license is MIT.
 
 ## Features and bugs
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-[tracker]: https://github.com/flutterchina/dio/issues
+[tracker]: https://github.com/tautalos/web/issues
 
 ## Donate
 
 Buy a cup of coffee for me (Scan by wechat)：
 
-![](https://cdn.jsdelivr.net/gh/flutterchina/flutter-in-action@1.0.3/docs/imgs/pay.jpeg)
+![](https://cdn.jsdelivr.net/gh/tautalos/flutter-in-action@1.0.3/docs/imgs/pay.jpeg)

@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
+import 'package:web/web.dart';
 
 main() async {
-  var dio = Dio();
-  dio.interceptors.add(LogInterceptor());
+  var web = Web();
+  web.interceptors.add(LogInterceptor());
   // Token can be shared with different requests.
   final token = CancelToken();
   // In one minute, we cancel!
@@ -18,7 +18,7 @@ main() async {
   var url3 = "https://www.google.com";
 
   await Future.wait([
-    dio
+    web
         .get(url1, cancelToken: token)
         .then((response) => print('${response.request!.path}: succeed!'))
         .catchError(
@@ -28,7 +28,7 @@ main() async {
         }
       },
     ),
-    dio
+    web
         .get(url2, cancelToken: token)
         .then((response) => print('${response.request!.path}: succeed!'))
         .catchError((e) {
@@ -36,7 +36,7 @@ main() async {
         print('$url2: $e');
       }
     }),
-    dio
+    web
         .get(url3, cancelToken: token)
         .then((response) => print('${response.request!.path}: succeed!'))
         .catchError((e) {

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:web/web.dart';
 
-import 'http.dart'; // make dio as global top-level variable
+import 'http.dart'; // make web as global top-level variable
 import 'routes/request.dart';
 
 // Must be top-level function
@@ -19,11 +19,11 @@ Future parseJson(String text) {
 
 void main() {
   // add interceptors
-  //dio.interceptors.add(CookieManager(CookieJar()));
-  dio.interceptors.add(LogInterceptor());
-  //(dio.transformer as DefaultTransformer).jsonDecodeCallback = parseJson;
-  dio.options.receiveTimeout = 15000;
-//  (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+  //web.interceptors.add(CookieManager(CookieJar()));
+  web.interceptors.add(LogInterceptor());
+  //(web.transformer as DefaultTransformer).jsonDecodeCallback = parseJson;
+  web.options.receiveTimeout = 15000;
+//  (web.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
 //      (client) {
 //    client.findProxy = (uri) {
 //      //proxy to my PC(charles)
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
           RaisedButton(
             child: Text("Request"),
             onPressed: () {
-              dio
+              web
                   .get<String>(
                       "https://www.thelotent.com/WSVistaWebClient/OData.svc/GetNowShowingSessions?\$format=json&\$filter=CinemaId+eq+%27100%27")
                   .then((r) {
