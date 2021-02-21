@@ -2,6 +2,27 @@ import '../../Web.dart';
 import '../requests/cancel_token.dart';
 
 class RequestOptions extends Options {
+  /// Request data, can be any type.
+  dynamic data;
+
+  /// Request base url, it can contain sub path, like: 'https://www.google.com/api/'.
+  late String baseUrl;
+
+  /// If the `path` starts with 'http(s)', the `baseURL` will be ignored, otherwise,
+  /// it will be combined and then resolved with the baseUrl.
+  String path = '';
+
+  /// See [Uri.queryParameters]
+  Map<String, dynamic> queryParameters;
+
+  CancelToken? cancelToken;
+
+  ProgressCallback? onReceiveProgress;
+
+  ProgressCallback? onSendProgress;
+
+  int? connectTimeout;
+
   RequestOptions({
     String? method,
     int? sendTimeout,
@@ -108,26 +129,50 @@ class RequestOptions extends Options {
     return Uri.parse(_url).normalizePath();
   }
 
-  /// Request data, can be any type.
-  dynamic data;
-
-  /// Request base url, it can contain sub path, like: 'https://www.google.com/api/'.
-  late String baseUrl;
-
-  /// If the `path` starts with 'http(s)', the `baseURL` will be ignored, otherwise,
-  /// it will be combined and then resolved with the baseUrl.
-  String path = '';
-
-  /// See [Uri.queryParameters]
-  Map<String, dynamic> queryParameters;
-
-  CancelToken? cancelToken;
-
-  ProgressCallback? onReceiveProgress;
-
-  ProgressCallback? onSendProgress;
-
-  int? connectTimeout;
+  factory RequestOptions.from(
+      {required BaseOptions defaultOptions,
+      required Options options,
+      required String url,
+      required data,
+      required Map<String, dynamic> queryParameters}) {
+    var query = (Map<String, dynamic>.from(defaultOptions.queryParameters))
+      ..addAll(queryParameters);
+    final optBaseUrl = (options is RequestOptions) ? options.baseUrl : null;
+    final optConnectTimeout =
+        (options is RequestOptions) ? options.connectTimeout : null;
+    return RequestOptions(
+      method: (options.method ?? defaultOptions.method)?.toUpperCase() ?? 'GET',
+      headers: (Map.from(defaultOptions.headers))..addAll(options.headers),
+      baseUrl: optBaseUrl ?? defaultOptions.baseUrl,
+      path: url,
+      data: data,
+      connectTimeout: optConnectTimeout ?? defaultOptions.connectTimeout ?? 0,
+      sendTimeout: options.sendTimeout ?? defaultOptions.sendTimeout ?? 0,
+      receiveTimeout:
+          options.receiveTimeout ?? defaultOptions.receiveTimeout ?? 0,
+      responseType: options.responseType ??
+          defaultOptions.responseType ??
+          ResponseType.json,
+      extra: (Map.from(defaultOptions.extra))..addAll(options.extra),
+      contentType: options.contentType ??
+          defaultOptions.contentType ??
+          Headers.jsonContentType,
+      validateStatus: options.validateStatus ??
+          defaultOptions.validateStatus ??
+          (int? status) {
+            return status != null && status >= 200 && status < 300;
+          },
+      receiveDataWhenStatusError: options.receiveDataWhenStatusError ??
+          (defaultOptions.receiveDataWhenStatusError ?? true),
+      followRedirects:
+          options.followRedirects ?? (defaultOptions.followRedirects ?? true),
+      maxRedirects: options.maxRedirects ?? defaultOptions.maxRedirects ?? 5,
+      queryParameters: query,
+      requestEncoder: options.requestEncoder ?? defaultOptions.requestEncoder,
+      responseDecoder:
+          options.responseDecoder ?? defaultOptions.responseDecoder,
+    );
+  }
 }
 
 class EmptyRequestOptions extends RequestOptions {}

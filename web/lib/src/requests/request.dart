@@ -2,7 +2,6 @@ import 'dart:async';
 
 import '../../web.dart';
 import '../faults/faults_factory.dart';
-import '../headers.dart';
 import '../interceptors/interceptor_wrapper.dart';
 import '../options/base_options.dart';
 import '../options/options.dart';
@@ -35,41 +34,38 @@ class Request<T> {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    options ??= Options();
-    if (options is RequestOptions) {
-      data = data ?? options.data;
-      queryParameters = queryParameters.isNotEmpty
-          ? queryParameters
-          : options.queryParameters;
-      cancelToken = cancelToken ?? options.cancelToken;
-      onSendProgress = onSendProgress ?? options.onSendProgress;
-      onReceiveProgress = onReceiveProgress ?? options.onReceiveProgress;
-    }
-    var requestOptions = mergeOptions(options, path, data, queryParameters);
-    requestOptions.onReceiveProgress = onReceiveProgress;
-    requestOptions.onSendProgress = onSendProgress;
-    requestOptions.cancelToken = cancelToken;
-    if (T != dynamic &&
-        !(requestOptions.responseType == ResponseType.bytes ||
-            requestOptions.responseType == ResponseType.stream)) {
-      if (T == String) {
-        requestOptions.responseType = ResponseType.plain;
-      } else {
-        requestOptions.responseType = ResponseType.json;
-      }
-    }
+    final requestOptions = makeRequestOptions(
+        data: data,
+        queryParameters: queryParameters,
+        cancelToken: cancelToken,
+        options: options,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress);
+    // Start the request flow
+    var future = Future<dynamic>.value(requestOptions);
+    // Build a request flow in which the processors(interceptors)
+    // execute in FIFO order.
+    future = _setupInterceptors(future, requestOptions, cancelToken);
+    // Normalize errors, we convert error to the Fault
+    return future
+        .then<Response<T>>((data) => ResponseFactory.build<T>(data))
+        .catchError(
+      (err) {
+        if (err == null || isErrorOrException(err)) {
+          throw FaultsFactory.build(err, requestOptions);
+        }
+        return ResponseFactory.build<T>(err, requestOptions);
+      },
+    );
+  }
 
+  Future _setupInterceptors(
+      Future future, RequestOptions requestOptions, CancelToken? cancelToken) {
     final interceptorWrapper = InterceptorWrapper(
         cancelToken: cancelToken,
         interceptors: interceptors,
         requestOptions: requestOptions);
 
-    // Build a request flow in which the processors(interceptors)
-    // execute in FIFO order.
-
-    // Start the request flow
-    late Future future;
-    future = Future.value(requestOptions);
     // Add request interceptors to request flow
     interceptors.forEach((Interceptor interceptor) {
       future =
@@ -95,69 +91,37 @@ class Request<T> {
       future = future
           .catchError(interceptorWrapper.handleError(interceptor.onError));
     });
-
-    // Normalize errors, we convert error to the Fault
-    return future.then<Response<T>>((data) {
-      return ResponseFactory.build<T>(data);
-    }).catchError((err) {
-      if (err == null || isErrorOrException(err)) {
-        throw FaultsFactory.build(err, requestOptions);
-      }
-      return ResponseFactory.build<T>(err, requestOptions);
-    });
+    return future;
   }
 
-  RequestOptions mergeOptions(
-      Options opt, String url, data, Map<String, dynamic> queryParameters) {
-    var query = (Map<String, dynamic>.from(defaultOptions.queryParameters))
-      ..addAll(queryParameters);
-    final optBaseUrl = (opt is RequestOptions) ? opt.baseUrl : null;
-    final optConnectTimeout =
-        (opt is RequestOptions) ? opt.connectTimeout : null;
-    return RequestOptions(
-      method: (opt.method ?? defaultOptions.method)?.toUpperCase() ?? 'GET',
-      headers: (Map.from(defaultOptions.headers))..addAll(opt.headers),
-      baseUrl: optBaseUrl ?? defaultOptions.baseUrl,
-      path: url,
-      data: data,
-      connectTimeout: optConnectTimeout ?? defaultOptions.connectTimeout ?? 0,
-      sendTimeout: opt.sendTimeout ?? defaultOptions.sendTimeout ?? 0,
-      receiveTimeout: opt.receiveTimeout ?? defaultOptions.receiveTimeout ?? 0,
-      responseType:
-          opt.responseType ?? defaultOptions.responseType ?? ResponseType.json,
-      extra: (Map.from(defaultOptions.extra))..addAll(opt.extra),
-      contentType: opt.contentType ??
-          defaultOptions.contentType ??
-          Headers.jsonContentType,
-      validateStatus: opt.validateStatus ??
-          defaultOptions.validateStatus ??
-          (int? status) {
-            return status != null && status >= 200 && status < 300;
-          },
-      receiveDataWhenStatusError: opt.receiveDataWhenStatusError ??
-          (defaultOptions.receiveDataWhenStatusError ?? true),
-      followRedirects:
-          opt.followRedirects ?? (defaultOptions.followRedirects ?? true),
-      maxRedirects: opt.maxRedirects ?? defaultOptions.maxRedirects ?? 5,
-      queryParameters: query,
-      requestEncoder: opt.requestEncoder ?? defaultOptions.requestEncoder,
-      responseDecoder: opt.responseDecoder ?? defaultOptions.responseDecoder,
-    );
-  }
-
-  FutureOr checkIfNeedEnqueue(Lock lock, EnqueueCallback callback) {
-    if (lock.locked) {
-      return lock.enqueue(callback);
-    } else {
-      return callback();
+  RequestOptions makeRequestOptions({
+    required data,
+    required Map<String, dynamic> queryParameters,
+    required CancelToken? cancelToken,
+    required Options? options,
+    required ProgressCallback? onSendProgress,
+    required ProgressCallback? onReceiveProgress,
+  }) {
+    options ??= Options();
+    if (options is RequestOptions) {
+      data = data ?? options.data;
+      queryParameters = queryParameters.isNotEmpty
+          ? queryParameters
+          : options.queryParameters;
+      cancelToken = cancelToken ?? options.cancelToken;
+      onSendProgress = onSendProgress ?? options.onSendProgress;
+      onReceiveProgress = onReceiveProgress ?? options.onReceiveProgress;
     }
-  }
-
-  // If the request has been cancelled, stop request and throw error.
-  void checkCancelled(CancelToken? cancelToken) {
-    if (cancelToken != null && cancelToken.cancelError != null) {
-      throw cancelToken.cancelError!;
-    }
+    return RequestOptions.from(
+        defaultOptions: defaultOptions,
+        options: options,
+        url: path,
+        data: data,
+        queryParameters: queryParameters)
+      ..onReceiveProgress = onReceiveProgress
+      ..onSendProgress = onSendProgress
+      ..cancelToken = cancelToken
+      ..setupResponseType<T>();
   }
 
   static Future<T> listenCancelForAsyncTask<T>(
@@ -170,4 +134,21 @@ class Request<T> {
   }
 
   static bool isErrorOrException(t) => t is Exception || t is Error;
+}
+
+extension on RequestOptions {
+  void setupResponseType<T>() {
+    if (shouldSetType<T>()) {
+      if (T == String) {
+        responseType = ResponseType.plain;
+      } else {
+        responseType = ResponseType.json;
+      }
+    }
+  }
+
+  bool shouldSetType<T>() =>
+      T != dynamic &&
+      !(responseType == ResponseType.bytes ||
+          responseType == ResponseType.stream);
 }
