@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import '../fault.dart';
+import '../faults/fault.dart';
 import '../options/request_options.dart';
 import '../responses/response.dart';
 

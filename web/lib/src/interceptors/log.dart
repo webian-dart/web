@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import '../fault.dart';
+import '../faults/fault.dart';
 import '../options/request_options.dart';
 import '../responses/response.dart';
 import 'interceptor.dart';

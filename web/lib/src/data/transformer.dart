@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 
-import '../fault.dart';
+import '../faults/fault.dart';
 import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';

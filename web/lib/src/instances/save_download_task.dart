@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../fault.dart';
+import 'package:web/src/faults/faults_factory.dart';
+
+import '../faults/fault.dart';
 import '../headers.dart';
 import '../requests/cancel_token.dart';
 import '../requests/requests.dart';
@@ -14,13 +16,11 @@ class SaveDownloadTask {
   final ProgressCallback? onProgress;
   final CancelToken? cancelToken;
   final bool deleteOnError;
-  final Function(dynamic) convertToFault;
 
   SaveDownloadTask({
     required this.savePath,
     required this.lengthHeader,
     required this.deleteOnError,
-    required this.convertToFault,
     this.onProgress,
     this.cancelToken,
   });
@@ -80,7 +80,7 @@ class SaveDownloadTask {
           try {
             await subscription.cancel();
           } finally {
-            completer.completeError(convertToFault(err));
+            completer.completeError(FaultsFactory.build(err));
           }
         });
       },
@@ -91,14 +91,14 @@ class SaveDownloadTask {
           await raf.close();
           completer.complete(response);
         } catch (e) {
-          completer.completeError(convertToFault(e));
+          completer.completeError(FaultsFactory.build(e));
         }
       },
       onError: (e) async {
         try {
           await _closeAndDelete();
         } finally {
-          completer.completeError(convertToFault(e));
+          completer.completeError(FaultsFactory.build(e));
         }
       },
       cancelOnError: true,

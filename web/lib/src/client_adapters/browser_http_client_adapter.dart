@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import '../fault.dart';
+import '../faults/fault.dart';
 import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';

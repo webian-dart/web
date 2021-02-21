@@ -1,5 +1,5 @@
-import 'options/request_options.dart';
-import 'responses/response.dart';
+import '../options/request_options.dart';
+import '../responses/response.dart';
 
 enum FaultType {
   /// It occurs when url is opened timeout.

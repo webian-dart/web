@@ -7,7 +7,7 @@ library web;
 
 export 'src/client_adapters/export.dart';
 export 'src/data/export.dart';
-export 'src/fault.dart';
+export 'src/faults/fault.dart';
 export 'src/headers.dart';
 export 'src/interceptors/export.dart';
 export 'src/options/export.dart';

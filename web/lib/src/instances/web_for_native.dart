@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:web/src/requests/request.dart';
+
 import '../../web.dart';
 import '../client_adapters/default_http_client_adapter.dart';
-import '../fault.dart';
+import '../faults/fault.dart';
 import '../headers.dart';
 import '../options/options.dart';
 import '../requests/cancel_token.dart';
@@ -87,10 +89,9 @@ class WebForNative with WebMixin implements Web {
             savePath: savePath,
             lengthHeader: lengthHeader,
             onProgress: onReceiveProgress,
-            deleteOnError: deleteOnError,
-            convertToFault: assureFault)
+            deleteOnError: deleteOnError)
         .start(response);
-    return listenCancelForAsyncTask(cancelToken, future);
+    return Request.listenCancelForAsyncTask(cancelToken, future);
   }
 
   Future<Response<ResponseBody>> _makeRequest(String urlPath,
