@@ -1,18 +1,17 @@
 import 'dart:async';
 
-import 'package:web/src/faults/faults_factory.dart';
-import 'package:web/src/requests/request_dispatcher.dart';
-import 'package:web/src/requests/request_stream_factory.dart';
-import 'package:web/src/responses/response_factory.dart';
-
 import '../../web.dart';
+import '../faults/faults_factory.dart';
 import '../headers.dart';
+import '../interceptors/interceptor_wrapper.dart';
 import '../options/base_options.dart';
 import '../options/options.dart';
 import '../options/request_options.dart';
 import '../responses/response.dart';
+import '../responses/response_factory.dart';
 import '../responses/responses.dart';
 import 'cancel_token.dart';
+import 'request_dispatcher.dart';
 import 'requests.dart';
 
 class Request<T> {
@@ -60,56 +59,10 @@ class Request<T> {
       }
     }
 
-    bool _isErrorOrException(t) => t is Exception || t is Error;
-
-    // Convert the request/response interceptor to a functional callback in which
-    // we can handle the return value of interceptor callback.
-    FutureOr<dynamic> Function(dynamic) _interceptorWrapper(
-        interceptor, bool request) {
-      return (data) async {
-        var type = request ? (data is RequestOptions) : (data is Response);
-        var lock =
-            request ? interceptors.requestLock : interceptors.responseLock;
-        if (_isErrorOrException(data) || type) {
-          return listenCancelForAsyncTask(
-            cancelToken,
-            Future(() {
-              return checkIfNeedEnqueue(lock, () {
-                if (type) {
-                  if (!request) data.request = data.request ?? requestOptions;
-                  return interceptor(data).then((e) => e ?? data);
-                } else {
-                  throw FaultsFactory.build(data, requestOptions);
-                }
-              });
-            }),
-          );
-        } else {
-          return ResponseFactory.build(data, requestOptions);
-        }
-      };
-    }
-
-    // Convert the error interceptor to a functional callback in which
-    // we can handle the return value of interceptor callback.
-    FutureOr<dynamic> Function(dynamic) _errorInterceptorWrapper(
-        errInterceptor) {
-      return (err) {
-        return checkIfNeedEnqueue(interceptors.errorLock, () {
-          if (err is! Response) {
-            return errInterceptor(FaultsFactory.build(err, requestOptions))
-                .then((e) {
-              if (e is! Response) {
-                throw FaultsFactory.build(e ?? err, requestOptions);
-              }
-              return e;
-            });
-          }
-          // err is a Response instance
-          return err;
-        });
-      };
-    }
+    final interceptorWrapper = InterceptorWrapper(
+        cancelToken: cancelToken,
+        interceptors: interceptors,
+        requestOptions: requestOptions);
 
     // Build a request flow in which the processors(interceptors)
     // execute in FIFO order.
@@ -119,7 +72,8 @@ class Request<T> {
     future = Future.value(requestOptions);
     // Add request interceptors to request flow
     interceptors.forEach((Interceptor interceptor) {
-      future = future.then(_interceptorWrapper(interceptor.onRequest, true));
+      future =
+          future.then(interceptorWrapper.handle(interceptor.onRequest, true));
     });
 
     // Add dispatching callback to request flow
@@ -127,23 +81,26 @@ class Request<T> {
         httpClientAdapter: httpClientAdapter,
         transformer: transformer,
         interceptors: interceptors);
-    future = future.then(_interceptorWrapper(dispatcher.onDispatch, true));
+    future =
+        future.then(interceptorWrapper.handle(dispatcher.onDispatch, true));
 
     // Add response interceptors to request flow
     interceptors.forEach((Interceptor interceptor) {
-      future = future.then(_interceptorWrapper(interceptor.onResponse, false));
+      future =
+          future.then(interceptorWrapper.handle(interceptor.onResponse, false));
     });
 
     // Add error handlers to request flow
     interceptors.forEach((Interceptor interceptor) {
-      future = future.catchError(_errorInterceptorWrapper(interceptor.onError));
+      future = future
+          .catchError(interceptorWrapper.handleError(interceptor.onError));
     });
 
     // Normalize errors, we convert error to the Fault
     return future.then<Response<T>>((data) {
       return ResponseFactory.build<T>(data);
     }).catchError((err) {
-      if (err == null || _isErrorOrException(err)) {
+      if (err == null || isErrorOrException(err)) {
         throw FaultsFactory.build(err, requestOptions);
       }
       return ResponseFactory.build<T>(err, requestOptions);
@@ -196,61 +153,6 @@ class Request<T> {
     }
   }
 
-  // Initiate Http requests
-  Future<Response<T>> _dispatchRequest<T>(RequestOptions options) async {
-    var cancelToken = options.cancelToken;
-    ResponseBody responseBody;
-    try {
-      var stream = await RequestStreamFactory.build(transformer, options);
-      responseBody = await httpClientAdapter.fetch(
-        options,
-        stream,
-        cancelToken?.whenCancel,
-      );
-      responseBody.headers = responseBody.headers;
-      var headers = Headers.fromMap(responseBody.headers);
-      var ret = Response(
-        headers: headers,
-        request: options,
-        redirects: responseBody.redirects ?? [],
-        isRedirect: responseBody.isRedirect,
-        statusCode: responseBody.statusCode,
-        statusMessage: responseBody.statusMessage,
-        extra: responseBody.extra,
-      );
-      var statusOk = options.validateStatus!(responseBody.statusCode);
-      if (statusOk || options.receiveDataWhenStatusError == true) {
-        var forceConvert = !(T == dynamic || T == String) &&
-            !(options.responseType == ResponseType.bytes ||
-                options.responseType == ResponseType.stream);
-        String? contentType;
-        if (forceConvert) {
-          contentType = headers.value(Headers.contentTypeHeader);
-          headers.set(Headers.contentTypeHeader, Headers.jsonContentType);
-        }
-        ret.data = await transformer.transformResponse(options, responseBody);
-        if (forceConvert) {
-          headers.set(Headers.contentTypeHeader, contentType);
-        }
-      } else {
-        await responseBody.stream.listen(null).cancel();
-      }
-      checkCancelled(cancelToken);
-      if (statusOk) {
-        return checkIfNeedEnqueue(interceptors.responseLock, () => ret)
-            as Response<T>;
-      } else {
-        throw Fault(
-          response: ret,
-          error: 'Http status error [${responseBody.statusCode}]',
-          type: FaultType.RESPONSE,
-        );
-      }
-    } catch (e) {
-      throw FaultsFactory.build(e, options);
-    }
-  }
-
   // If the request has been cancelled, stop request and throw error.
   void checkCancelled(CancelToken? cancelToken) {
     if (cancelToken != null && cancelToken.cancelError != null) {
@@ -266,4 +168,6 @@ class Request<T> {
       future,
     ]);
   }
+
+  static bool isErrorOrException(t) => t is Exception || t is Error;
 }
