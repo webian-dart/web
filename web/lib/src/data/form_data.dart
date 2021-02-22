@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:web/src/data/map_encoder.dart';
+
 import '../requests/multipart_files/multipart_file.dart';
 import '../utils.dart';
 
@@ -37,9 +39,9 @@ class FormData {
   /// Create FormData instance with a Map.
   FormData.fromMap(Map<String, dynamic> map) {
     _init();
-    encodeMap(
-      map,
-      (key, value) {
+    MapEncoder(
+      data: map,
+      webEncoder: (key, value) {
         if (value == null) return null;
         if (value is MultipartFile) {
           files.add(MapEntry(key, value));
@@ -49,7 +51,7 @@ class FormData {
         return null;
       },
       encode: false,
-    );
+    ).encode();
   }
 
   void _init() {

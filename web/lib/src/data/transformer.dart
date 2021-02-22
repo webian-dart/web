@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
+import 'package:web/src/data/map_encoder.dart';
 
 import '../faults/fault.dart';
 import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';
 import '../responses/responses.dart';
-import '../utils.dart';
 
 /// [Transformer] allows changes to the request/response data before
 /// it is sent/received to/from the server.
@@ -37,10 +37,12 @@ abstract class Transformer {
   /// It is mostly used with  the "application/x-www-form-urlencoded" content-type.
   ///
   static String urlEncodeMap(Map map) {
-    return encodeMap(map, (key, value) {
-      if (value == null) return key;
-      return '$key=${Uri.encodeQueryComponent(value.toString())}';
-    });
+    return MapEncoder(
+        data: map,
+        webEncoder: (key, value) {
+          if (value == null) return key;
+          return '$key=${Uri.encodeQueryComponent(value.toString())}';
+        }).encode();
   }
 }
 
