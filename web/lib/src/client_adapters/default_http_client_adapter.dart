@@ -90,11 +90,20 @@ class DefaultHttpClientAdapter implements HttpClientAdapter {
     Future requestFuture = httpClient.openUrl(options.method!, options.uri);
     HttpClientRequest request;
     try {
-      request = await requestFuture;
+      final connectTimeout = options.connectTimeout ?? 0;
+      if (connectTimeout > 0) {
+        request =
+            await requestFuture.timeout(Duration(milliseconds: connectTimeout));
+      } else {
+        request = await requestFuture;
+      }
       //Set Headers
       options.headers.forEach((k, v) => request.headers.set(k, v));
     } on SocketException catch (e) {
       if (e.message.contains('timed out')) _throwConnectingTimeout(options);
+      rethrow;
+    } on TimeoutException {
+      _throwConnectingTimeout(options);
       rethrow;
     }
     request.followRedirects = options.followRedirects ?? true;
