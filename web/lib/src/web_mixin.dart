@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:web/src/faults/faults_factory.dart';
+import 'package:web/src/interceptors/interceptors.dart';
 import 'package:web/src/requests/request.dart';
 import 'package:web/src/responses/response_factory.dart';
 
@@ -9,7 +10,6 @@ import 'client_adapters/http_client_adapter.dart';
 import 'data/transformer.dart';
 import 'faults/fault.dart';
 import 'headers.dart';
-import 'interceptors/interceptor.dart';
 import 'options/options.dart';
 import 'requests/cancel_token.dart';
 import 'requests/requests.dart';

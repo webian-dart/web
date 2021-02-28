@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/tautalos/fvm/versions/1.27.0-4.0.pre"
+export "FLUTTER_ROOT=/Users/tautalos/fvm/versions/1.26.0-17.8.pre"
 export "FLUTTER_APPLICATION_PATH=/Users/tautalos/workspace/flutter/web/example/flutter_example"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"

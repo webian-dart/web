@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:web/src/interceptors/interceptors.dart';
+
 import 'client_adapters/http_client_adapter.dart';
 import 'data/transformer.dart';
 import 'headers.dart';
@@ -8,7 +10,6 @@ import 'instances/instance_stub.dart'
     if (dart.library.html) 'instances/web_for_browser.dart'
     // ignore: uri_does_not_exist
     if (dart.library.io) 'instances/web_for_native.dart';
-import 'interceptors/interceptor.dart';
 import 'options/base_options.dart';
 import 'options/options.dart';
 import 'requests/cancel_token.dart';

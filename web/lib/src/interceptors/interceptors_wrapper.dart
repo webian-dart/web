@@ -8,30 +8,32 @@ import '../../web.dart';
 import '../options/request_options.dart';
 import '../requests/cancel_token.dart';
 import '../responses/response.dart';
+import 'interceptors.dart';
+import 'lock.dart';
 
-class InterceptorWrapper {
+class InterceptorsWrapper {
   final Interceptors interceptors;
   final CancelToken? cancelToken;
   final RequestOptions? requestOptions;
 
-  InterceptorWrapper(
+  InterceptorsWrapper(
       {required this.cancelToken,
       required this.interceptors,
       required this.requestOptions});
 
-  // Convert the request/response interceptor to a functional callback in which
+  // Convert the request interceptor to a functional callback in which
   // we can handle the return value of interceptor callback.
-  FutureOr<dynamic> Function(dynamic) handle(interceptor, bool request) {
+  FutureOr<dynamic> Function(dynamic) wrapForRequest(interceptor) {
     return (data) async {
-      var type = request ? (data is RequestOptions) : (data is Response);
-      var lock = request ? interceptors.requestLock : interceptors.responseLock;
-      if (Request.isErrorOrException(data) || type) {
+      final isReq = data is RequestOptions;
+      final lock = interceptors.requestLock;
+      final isError = Request.isErrorOrException(data);
+      if (isError || isReq) {
         return Request.listenCancelForAsyncTask(
           cancelToken,
           Future(() {
             return checkIfNeedEnqueue(lock, () {
-              if (type) {
-                if (!request) data.request = data.request ?? requestOptions;
+              if (isReq) {
                 return interceptor(data).then((e) => e ?? data);
               } else {
                 throw FaultsFactory.build(data, requestOptions);
@@ -40,6 +42,39 @@ class InterceptorWrapper {
           }),
         );
       } else {
+        // skip request interceptor
+        return ResponseFactory.build(data, requestOptions);
+      }
+    };
+  }
+
+  // Convert the request interceptor to a functional callback in which
+  // we can handle the return value of interceptor callback.
+  FutureOr<dynamic> Function(dynamic) wrapForResponse(interceptor) {
+    return (data) async {
+      final isResp = data is Response;
+      final lock = interceptors.responseLock;
+      final isError = Request.isErrorOrException(data);
+      if (isResp || isError) {
+        return Request.listenCancelForAsyncTask(
+          cancelToken,
+          Future(() {
+            return checkIfNeedEnqueue(lock, () {
+              if (isError) {
+                throw FaultsFactory.build(data, requestOptions);
+              } else {
+                if (isResp) {
+                  data.request = data.request ?? requestOptions;
+                } else {
+                  data = ResponseFactory.build(data, requestOptions);
+                }
+                return interceptor(data).then((e) => e ?? data);
+              }
+            });
+          }),
+        );
+      } else {
+        // skip request interceptor
         return ResponseFactory.build(data, requestOptions);
       }
     };
@@ -47,7 +82,7 @@ class InterceptorWrapper {
 
   // Convert the error interceptor to a functional callback in which
   // we can handle the return value of interceptor callback.
-  FutureOr<dynamic> Function(dynamic) handleError(errInterceptor) {
+  FutureOr<dynamic> Function(dynamic) makeOnErrorHandler(errInterceptor) {
     return (err) {
       return checkIfNeedEnqueue(interceptors.errorLock, () {
         if (err is! Response) {

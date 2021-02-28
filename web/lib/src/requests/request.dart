@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:web/src/interceptors/interceptors.dart';
+
 import '../../web.dart';
 import '../faults/faults_factory.dart';
-import '../interceptors/interceptor_wrapper.dart';
+import '../interceptors/interceptors_wrapper.dart';
 import '../options/base_options.dart';
 import '../options/options.dart';
 import '../options/request_options.dart';
@@ -61,7 +63,7 @@ class Request<T> {
 
   Future _setupInterceptors(
       Future future, RequestOptions requestOptions, CancelToken? cancelToken) {
-    final interceptorWrapper = InterceptorWrapper(
+    final interceptorWrapper = InterceptorsWrapper(
         cancelToken: cancelToken,
         interceptors: interceptors,
         requestOptions: requestOptions);
@@ -69,7 +71,7 @@ class Request<T> {
     // Add request interceptors to request flow
     interceptors.forEach((Interceptor interceptor) {
       future =
-          future.then(interceptorWrapper.handle(interceptor.onRequest, true));
+          future.then(interceptorWrapper.wrapForRequest(interceptor.onRequest));
     });
 
     // Add dispatching callback to request flow
@@ -78,18 +80,18 @@ class Request<T> {
         transformer: transformer,
         interceptors: interceptors);
     future =
-        future.then(interceptorWrapper.handle(dispatcher.onDispatch, true));
+        future.then(interceptorWrapper.wrapForRequest(dispatcher.onDispatch));
 
     // Add response interceptors to request flow
     interceptors.forEach((Interceptor interceptor) {
-      future =
-          future.then(interceptorWrapper.handle(interceptor.onResponse, false));
+      future = future
+          .then(interceptorWrapper.wrapForResponse(interceptor.onResponse));
     });
 
     // Add error handlers to request flow
     interceptors.forEach((Interceptor interceptor) {
-      future = future
-          .catchError(interceptorWrapper.handleError(interceptor.onError));
+      future = future.catchError(
+          interceptorWrapper.makeOnErrorHandler(interceptor.onFault));
     });
     return future;
   }

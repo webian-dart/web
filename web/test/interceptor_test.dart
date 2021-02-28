@@ -1,7 +1,12 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:web/web.dart';
+import 'package:web/src/faults/fault.dart';
+import 'package:web/src/interceptors/export.dart';
+import 'package:web/src/interceptors/interceptor.dart';
+import 'package:web/src/options/request_options.dart';
+import 'package:web/src/responses/response.dart';
+import 'package:web/src/web.dart';
 
 import 'mock_adapter.dart';
 
@@ -23,8 +28,7 @@ void main() {
       web = Web();
       web.options.baseUrl = MockAdapter.mockBase;
       web.httpClientAdapter = MockAdapter();
-      web.interceptors
-          .add(InterceptorsWrapper(onRequest: (RequestOptions options) async {
+      web.interceptors.add(RequestInterceptor((RequestOptions options) async {
         switch (options.path) {
           case '/fakepath1':
             return web.resolve('fake data');
@@ -65,96 +69,83 @@ void main() {
     });
   });
 
-  test('#test Response Interceptor', () async {
+  group('#test response interceptor', () {
     Web web;
+    test('#test Response Interceptor', () async {
+      const URL_NOT_FIND = '/404/';
+      const URL_NOT_FIND_1 = URL_NOT_FIND + '1';
+      const URL_NOT_FIND_2 = URL_NOT_FIND + '2';
+      const URL_NOT_FIND_3 = URL_NOT_FIND + '3';
 
-    const URL_NOT_FIND = '/404/';
-    const URL_NOT_FIND_1 = URL_NOT_FIND + '1';
-    const URL_NOT_FIND_2 = URL_NOT_FIND + '2';
-    const URL_NOT_FIND_3 = URL_NOT_FIND + '3';
+      web = Web();
+      web.httpClientAdapter = MockAdapter();
+      web.options.baseUrl = MockAdapter.mockBase;
 
-    web = Web();
-    web.httpClientAdapter = MockAdapter();
-    web.options.baseUrl = MockAdapter.mockBase;
+      web.interceptors.add(
+          ResponseInterceptor((Response response) => response.data['data']));
 
-    web.interceptors.add(InterceptorsWrapper(
-      onResponse: (Response response) {
-        return response.data['data'];
-      },
-      onError: (e) {
-        if (e.response != null) {
-          switch (e.response!.request?.path) {
-            case URL_NOT_FIND:
-              return e;
-            case URL_NOT_FIND_1:
-              return web.resolve(
-                  'fake data'); // you can also return a HttpError directly.
-            case URL_NOT_FIND_2:
-              return Response(data: 'fake data');
-            case URL_NOT_FIND_3:
-              return 'custom error info [${e.response!.statusCode}]';
+      web.interceptors.add(FaultInterceptor(
+        (fault) {
+          if (fault.response != null) {
+            switch (fault.response!.request!.path) {
+              case URL_NOT_FIND:
+                return fault;
+              case URL_NOT_FIND_1:
+                return web.resolve(
+                    'fake data'); // you can also return a HttpError directly.
+              case URL_NOT_FIND_2:
+                return Response(data: 'fake data');
+              case URL_NOT_FIND_3:
+                return 'custom error info [${fault.response!.statusCode}]';
+            }
           }
-        }
-        return e;
-      },
-    ));
-    var response = await web.get('/test');
-    expect(response.data['path'], '/test');
-    expect(web.get(URL_NOT_FIND).catchError((e) => throw e.response.statusCode),
-        throwsA(equals(404)));
-    response = await web.get(URL_NOT_FIND + '1');
-    expect(response.data, 'fake data');
-    response = await web.get(URL_NOT_FIND + '2');
-    expect(response.data, 'fake data');
-    expect(web.get(URL_NOT_FIND + '3').catchError((e) => throw e.message),
-        throwsA(equals('custom error info [404]')));
-  });
+          return fault;
+        },
+      ));
+      var response = await web.get('/test');
+      expect(response.data['path'], '/test');
+      expect(
+          web.get(URL_NOT_FIND).catchError((e) => throw e.response.statusCode),
+          throwsA(equals(404)));
+      response = await web.get(URL_NOT_FIND + '1');
+      expect(response.data, 'fake data');
+      response = await web.get(URL_NOT_FIND + '2');
+      expect(response.data, 'fake data');
+      expect(web.get(URL_NOT_FIND + '3').catchError((e) => throw e.message),
+          throwsA(equals('custom error info [404]')));
+    });
 
-  group('Interceptor request lock', () {
-    test('test', () async {
-      String? csrfToken;
-      final web = Web();
-      var tokenRequestCounts = 0;
-      // Web instance to request token
-      var tokenWeb = Web();
-      web.options.baseUrl = tokenWeb.options.baseUrl = MockAdapter.mockBase;
-      web.httpClientAdapter = tokenWeb.httpClientAdapter = MockAdapter();
-      var myInter = MyInterceptor();
-      web.interceptors.add(myInter);
+    test('multiple response interceptors', () async {
+      web = Web();
+      web.httpClientAdapter = MockAdapter();
+      web.options.baseUrl = MockAdapter.mockBase;
       web.interceptors
-          .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
-        if (csrfToken == null) {
-          web.lock();
-          tokenRequestCounts++;
-          return tokenWeb.get('/token').then((d) {
-            options.headers['csrfToken'] = csrfToken = d.data['data']['token'];
-            return options;
-          }).whenComplete(() => web.unlock()); // unlock the Web
-        } else {
-          options.headers['csrfToken'] = csrfToken;
-          return options;
-        }
-      }));
-
-      var result = 0;
-      void _onResult(d) {
-        if (tokenRequestCounts > 0) ++result;
-      }
-
-      await Future.wait([
-        web.get('/test?tag=1').then(_onResult),
-        web.get('/test?tag=2').then(_onResult),
-        web.get('/test?tag=3').then(_onResult)
-      ]);
-      expect(tokenRequestCounts, 1);
-      expect(result, 3);
-      assert(myInter.requestCount > 0);
-      web.interceptors[0] = myInter;
-      web.interceptors.clear();
-      assert(web.interceptors.isEmpty == true);
+        ..add(
+          ResponseInterceptor((resp) {
+            print('Evil 1');
+            return resp.data['data'];
+          }),
+        )
+        ..add(ResponseInterceptor(
+          (resp) {
+            print('Evil 1');
+            resp.data['extra_1'] = 'extra1';
+            return resp;
+          },
+        ))
+        ..add(ResponseInterceptor(
+          (resp) {
+            print('Evil 2');
+            resp.data['extra_2'] = 'extra2';
+            return resp;
+          },
+        ));
+      final resp = await web.get('/test');
+      expect(resp.data['path'], '/test');
+      //expect(resp.data['extra_1'], 'extra1');
+      expect(resp.data['extra_2'], 'extra2');
     });
   });
-
   group('Interceptor error lock', () {
     test('test', () async {
       String? csrfToken;
@@ -164,9 +155,10 @@ void main() {
       final tokenWeb = Web();
       web.options.baseUrl = tokenWeb.options.baseUrl = MockAdapter.mockBase;
       web.httpClientAdapter = tokenWeb.httpClientAdapter = MockAdapter();
-      web.interceptors.add(InterceptorsWrapper(onRequest: (opt) {
+      web.interceptors.add(RequestInterceptor((opt) {
         opt.headers['csrfToken'] = csrfToken;
-      }, onError: (Fault error) {
+      }));
+      web.interceptors.add(FaultInterceptor((Fault error) {
         // Assume 401 stands for token expired
         if (error.response?.statusCode == 401) {
           final options = error.response!.request!;
