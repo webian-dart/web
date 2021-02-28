@@ -57,7 +57,7 @@ class RequestDispatcher<T> {
                 options.responseType == ResponseType.stream);
         String? contentType;
         if (forceConvert) {
-          contentType = headers.value(Headers.contentTypeHeader);
+          contentType = headers.valueOf(Headers.contentTypeHeader);
           headers.set(Headers.contentTypeHeader, Headers.jsonContentType);
         }
         ret.data = await transformer.transformResponse(options, responseBody);

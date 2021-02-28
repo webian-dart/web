@@ -9,38 +9,6 @@ import 'package:test/test.dart';
 import 'package:web/web.dart';
 
 void main() {
-  test('#test headers', () {
-    var headers = Headers.fromMap({
-      'set-cookie': ['k=v', 'k1=v1'],
-      'content-length': ['200'],
-      'test': ['1', '2'],
-    });
-    headers.add('SET-COOKIE', 'k2=v2');
-    assert(headers.value('content-length') == '200');
-    expect(Future(() => headers.value('test')), throwsException);
-    assert(headers['set-cookie']?.length == 3);
-    headers.remove('set-cookie', 'k=v');
-    assert(headers['set-cookie']?.length == 2);
-    headers.removeAll('set-cookie');
-    assert(headers['set-cookie'] == null);
-    var ls = [];
-    headers.forEach((k, list) {
-      ls.addAll(list);
-    });
-    assert(ls.length == 3);
-    assert(headers.toString() == 'content-length: 200\ntest: 1\ntest: 2\n');
-    headers.set('content-length', '300');
-    assert(headers.value('content-length') == '300');
-    headers.set('content-length', ['400']);
-    assert(headers.value('content-length') == '400');
-
-    var headers1 = Headers();
-    headers1.set('xx', 'v');
-    assert(headers1.value('xx') == 'v');
-    headers1.clear();
-    assert(headers1.map.isEmpty == true);
-  });
-
   test('#send with an invalid URL', () {
     expect(Web().get('http://http.invalid').catchError((e) => throw e.error),
         throwsA(const TypeMatcher<SocketException>()));

@@ -42,14 +42,15 @@ class SaveDownloadTask {
     var stream = response.data!.stream;
     var compressed = false;
     var total = 0;
-    var contentEncoding = response.headers.value(Headers.contentEncodingHeader);
+    var contentEncoding =
+        response.headers.valueOf(Headers.contentEncodingHeader);
     if (contentEncoding != null) {
       compressed = ['gzip', 'deflate', 'compress'].contains(contentEncoding);
     }
     if (lengthHeader == Headers.contentLengthHeader && compressed) {
       total = -1;
     } else {
-      total = int.parse(response.headers.value(lengthHeader) ?? '-1');
+      total = int.parse(response.headers.valueOf(lengthHeader) ?? '-1');
     }
 
     late StreamSubscription subscription;

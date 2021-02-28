@@ -43,7 +43,7 @@ void main() {
       expect(response.statusCode, 200);
       expect(response.isRedirect, false);
       expect(response.data['query'], equals('id=12&name=wendu'));
-      expect(response.headers.value('single'), equals('value'));
+      expect(response.headers.valueOf('single'), equals('value'));
 
       const map = {'content': 'I am playload'};
 
@@ -95,7 +95,7 @@ void main() {
       expect(response.statusCode, 200);
       expect(response.isRedirect, false);
       expect(response.data['query'], equals('id=12&name=wendu'));
-      expect(response.headers.value('single'), equals('value'));
+      expect(response.headers.valueOf('single'), equals('value'));
 
       const map = {'content': 'I am playload'};
 

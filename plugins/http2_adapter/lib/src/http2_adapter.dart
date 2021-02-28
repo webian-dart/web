@@ -84,7 +84,7 @@ class Http2Adapter extends HttpClientAdapter {
             responseHeaders.add(name, value);
           }
 
-          var status = responseHeaders.value(':status') ?? '';
+          var status = responseHeaders.valueOf(':status') ?? '';
           statusCode = int.parse(status);
           responseHeaders.removeAll(':status');
           needRedirect = options.followRedirects == true &&
@@ -119,7 +119,7 @@ class Http2Adapter extends HttpClientAdapter {
     await completer.future;
     // Handle redirection
     if (needRedirect) {
-      var url = responseHeaders.value('location');
+      var url = responseHeaders.valueOf('location');
       redirects.add(RedirectRecord(
           statusCode, options.method ?? '', Uri.parse(url ?? '')));
       if (options.maxRedirects != null) {

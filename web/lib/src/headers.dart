@@ -37,10 +37,10 @@ class Headers {
   /// there is no header with the provided name, [:null:] will be
   /// returned. If the header has more than one value an exception is
   /// thrown.
-  String? value(String name) {
-    var arr = this[name];
-    if (arr == null) return null;
-    if (arr.length == 1) return arr.first;
+  String? valueOf(String name) {
+    final values = this[name];
+    if (values == null) return null;
+    if (values.length == 1) return values.first;
     throw Exception(
         '"$name" header has more than one value, please use Headers[name]');
   }
@@ -66,9 +66,9 @@ class Headers {
 
   /// Removes a specific value for a header name.
   void remove(String name, String value) {
-    var arr = this[name];
-    if (arr == null) return;
-    arr.removeWhere((v) => v == value);
+    var values = this[name];
+    if (values == null) return;
+    values.removeWhere((v) => v == value);
   }
 
   /// Removes all values for the specified header name.

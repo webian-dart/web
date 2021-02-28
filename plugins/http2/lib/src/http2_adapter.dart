@@ -87,7 +87,7 @@ class Http2Adapter extends HttpClientAdapter {
       cancelOnError: true,
     );
     await completer.future;
-    var status = responseHeaders.value(':status');
+    var status = responseHeaders.valueOf(':status');
     responseHeaders.removeAll(':status');
     return ResponseBody(
       sc.stream,
