@@ -23,23 +23,23 @@ class Http2Adapter extends HttpClientAdapter {
     Stream<List<int>> requestStream,
     Future? cancelFuture,
   ) async {
-    List<RedirectRecord> redirects = [];
+    final redirects = <RedirectRecord>[];
     return _fetch(options, requestStream, cancelFuture, redirects);
   }
 
   Future<ResponseBody> _fetch(
     RequestOptions options,
-    Stream<List<int>> requestStream,
+    Stream<List<int>>? requestStream,
     Future? cancelFuture,
     List<RedirectRecord> redirects,
   ) async {
     final transport = await _connectionMgr.getConnection(options);
     final uri = options.uri;
     var path = uri.path;
-    if (uri.query.trim().isNotEmpty) path += ("?" + uri.query);
-    if (!path.startsWith("/")) path = "/" + path;
+    if (path.isEmpty || !path.startsWith('/')) path = '/' + path;
+    if (uri.query.trim().isNotEmpty) path += ('?' + uri.query);
     var headers = [
-      Header.ascii(':method', options.method ?? ""),
+      Header.ascii(':method', options.method ?? ''),
       Header.ascii(':path', path),
       Header.ascii(':scheme', uri.scheme),
       Header.ascii(':authority', uri.host),
@@ -51,18 +51,21 @@ class Http2Adapter extends HttpClientAdapter {
           .map((key) => Header.ascii(key, options.headers[key] ?? ''))
           .toList(),
     );
+    final noDataStream = requestStream == null;
     // Creates a new outgoing stream.
-    final stream = transport.makeRequest(headers);
+    final stream = transport.makeRequest(headers, endStream: noDataStream);
     cancelFuture?.whenComplete(() {
-      Future.delayed(Duration(seconds: 0)).then((e) {
+      Future(() {
         stream.terminate();
       });
     });
 
-    await (requestStream.listen((data) {
-      stream.outgoingMessages.add(DataStreamMessage(data));
-    }).asFuture());
-    await stream.outgoingMessages.close();
+    if (!noDataStream) {
+      await requestStream!.listen((data) {
+        stream.outgoingMessages.add(DataStreamMessage(data));
+      }).asFuture();
+      await stream.outgoingMessages.close();
+    }
 
     final sc = StreamController<Uint8List>();
     final responseHeaders = Headers();
@@ -80,12 +83,12 @@ class Http2Adapter extends HttpClientAdapter {
             responseHeaders.add(name, value);
           }
 
-          var status = responseHeaders.value(":status") ?? "";
+          var status = responseHeaders.value(':status') ?? "";
           statusCode = int.parse(status);
-          responseHeaders.removeAll(":status");
+          responseHeaders.removeAll(':status');
           needRedirect = options.followRedirects == true &&
               (options.maxRedirects ?? 0) > 0 &&
-              [301, 302, 303, 307, 308].contains(statusCode);
+              const [301, 302, 303, 307, 308].contains(statusCode);
           needResponse = !needRedirect &&
                   options.validateStatus?.call(statusCode ?? "") == true ||
               options.receiveDataWhenStatusError == true;
