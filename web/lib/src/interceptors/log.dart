@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:web/src/data/form_data.dart';
+
 import '../faults/fault.dart';
 import '../options/request_options.dart';
 import '../responses/response.dart';
@@ -69,7 +71,11 @@ class LogInterceptor extends Interceptor {
     }
     if (requestBody) {
       logPrint('data:');
-      _printAll(options.data);
+      if (options.data is FormData) {
+        _printAll(options.data.fields);
+      } else {
+        _printAll(options.data);
+      }
     }
     logPrint('');
   }
