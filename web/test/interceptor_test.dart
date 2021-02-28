@@ -122,20 +122,17 @@ void main() {
       web.interceptors
         ..add(
           ResponseInterceptor((resp) {
-            print('Evil 1');
             return resp.data['data'];
           }),
         )
         ..add(ResponseInterceptor(
           (resp) {
-            print('Evil 1');
             resp.data['extra_1'] = 'extra1';
             return resp;
           },
         ))
         ..add(ResponseInterceptor(
           (resp) {
-            print('Evil 2');
             resp.data['extra_2'] = 'extra2';
             return resp;
           },
