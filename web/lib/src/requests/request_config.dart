@@ -1,3 +1,5 @@
+import 'package:web/src/extensions/map_extensions.dart';
+
 import '../../Web.dart';
 import '../headers.dart';
 import 'requests.dart';
@@ -18,7 +20,7 @@ class RequestConfig {
     this.maxRedirects = 5,
     this.requestEncoder,
     this.responseDecoder,
-  })  : headers = headers ?? {},
+  })  : headers = toCaseInsensitiveKeyMap(headers),
         extra = extra ?? {} {
     this.contentType = contentType;
   }

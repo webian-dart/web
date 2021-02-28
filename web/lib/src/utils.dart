@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 /// A regular expression that matches strings that are composed entirely of
@@ -26,4 +27,13 @@ Encoding encodingForCharset(String? charset, [Encoding fallback = latin1]) {
   if (charset == null) return fallback;
   var encoding = Encoding.getByName(charset);
   return encoding ?? fallback;
+}
+
+Map<String, V> caseInsensitiveKeyMap<V>({Map<String, V>? value}) {
+  final map = LinkedHashMap<String, V>(
+    equals: (key1, key2) => key1.toLowerCase() == key2.toLowerCase(),
+    hashCode: (key) => key.toLowerCase().hashCode,
+  );
+  if (value?.isNotEmpty == true) map.addAll(value!);
+  return map;
 }
