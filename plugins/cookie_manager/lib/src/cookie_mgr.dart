@@ -29,7 +29,7 @@ class CookieManager extends Interceptor {
   Future onResponse(Response response) async => _saveCookies(response);
 
   @override
-  Future onError(Fault err) async => _saveCookies(err.response);
+  Future onFault(Fault err) async => _saveCookies(err.response);
 
   void _saveCookies(Response? response) {
     if (response?.headers != null) {
@@ -44,6 +44,6 @@ class CookieManager extends Interceptor {
   }
 
   static String getCookies(List<Cookie> cookies) {
-    return cookies.map((cookie) => "${cookie.name}=${cookie.value}").join('; ');
+    return cookies.map((cookie) => '${cookie.name}=${cookie.value}').join('; ');
   }
 }

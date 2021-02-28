@@ -4,23 +4,23 @@ import 'dart:io';
 import 'package:web/web.dart';
 
 // In this example we download a image and listen the downloading progress.
-main() async {
+void main() async {
   var web = Web();
   web.interceptors.add(LogInterceptor());
   // This is big file(about 200M)
-  //   var url = "http://download.dcloud.net.cn/HBuilder.9.0.2.macosx_64.dmg";
+  //   var url = 'http://download.dcloud.net.cn/HBuilder.9.0.2.macosx_64.dmg';
 
   var url =
-      "https://cdn.jsdelivr.net/gh/tautalos/flutter-in-action@1.0/docs/imgs/book.jpg";
+      'https://cdn.jsdelivr.net/gh/tautalos/flutter-in-action@1.0/docs/imgs/book.jpg';
 
-  // var url = "https://www.google.com/img/bdlogo.gif";
-  await download1(web, url, "./example/book.jpg");
-  await download1(web, url, (Headers headers) => "./example/book1.jpg");
-  await download2(web, url, "./example/book2.jpg");
+  // var url = 'https://www.google.com/img/bdlogo.gif';
+  await download1(web, url, './example/book.jpg');
+  await download1(web, url, (Headers headers) => './example/book1.jpg');
+  await download2(web, url, './example/book2.jpg');
 }
 
 Future download1(Web web, String url, savePath) async {
-  CancelToken cancelToken = CancelToken();
+  final cancelToken = CancelToken();
   try {
     await web.download(url, savePath,
         onReceiveProgress: showDownloadProgress, cancelToken: cancelToken);
@@ -32,7 +32,7 @@ Future download1(Web web, String url, savePath) async {
 //Another way to downloading small file
 Future download2(Web web, String url, String savePath) async {
   try {
-    Response response = await web.get(
+    final response = await web.get(
       url,
       onReceiveProgress: showDownloadProgress,
       //Received data with List<int>
@@ -42,7 +42,7 @@ Future download2(Web web, String url, String savePath) async {
           receiveTimeout: 0),
     );
     print(response.headers);
-    File file = File(savePath);
+    final file = File(savePath);
     var raf = file.openSync(mode: FileMode.write);
     // response.data is List<int> type
     raf.writeFromSync(response.data);
@@ -54,6 +54,6 @@ Future download2(Web web, String url, String savePath) async {
 
 void showDownloadProgress(received, total) {
   if (total != -1) {
-    print((received / total * 100).toStringAsFixed(0) + "%");
+    print((received / total * 100).toStringAsFixed(0) + '%');
   }
 }

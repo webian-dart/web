@@ -29,7 +29,7 @@ class RequestDispatcher<T> {
       (RequestOptions options) async => await dispatch(options);
 
   // Initiate Http requests
-  Future<Response<T>> dispatch<T>(RequestOptions options) async {
+  Future<Response<D>> dispatch<D>(RequestOptions options) async {
     var cancelToken = options.cancelToken;
     ResponseBody responseBody;
     try {
@@ -70,7 +70,7 @@ class RequestDispatcher<T> {
       checkCancelled(cancelToken);
       if (statusOk) {
         return checkIfNeedEnqueue(interceptors.responseLock, () => ret)
-            as Response<T>;
+            as Response<D>;
       } else {
         throw Fault(
           response: ret,

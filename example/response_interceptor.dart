@@ -2,9 +2,9 @@ import 'package:web/web.dart';
 
 void main() async {
   const URL_NOT_FIND = 'https://wendux.github.io/xxxxx/';
-  const URL_NOT_FIND_1 = URL_NOT_FIND + "1";
-  const URL_NOT_FIND_2 = URL_NOT_FIND + "2";
-  const URL_NOT_FIND_3 = URL_NOT_FIND + "3";
+  const URL_NOT_FIND_1 = URL_NOT_FIND + '1';
+  const URL_NOT_FIND_2 = URL_NOT_FIND + '2';
+  const URL_NOT_FIND_3 = URL_NOT_FIND + '3';
   final web = Web();
   web.options.baseUrl = 'http://httpbin.org/';
   web.interceptors.add(ResponseInterceptor((Response response) {
@@ -17,9 +17,9 @@ void main() async {
           return e;
         case URL_NOT_FIND_1:
           // you can also return a HttpError directly.
-          return web.resolve("fake data");
+          return web.resolve('fake data');
         case URL_NOT_FIND_2:
-          return Response(data: "fake data");
+          return Response(data: 'fake data');
         case URL_NOT_FIND_3:
           return 'custom error info [${e.response!.statusCode}]';
       }

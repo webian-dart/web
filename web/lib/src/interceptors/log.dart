@@ -81,7 +81,7 @@ class LogInterceptor extends Interceptor {
   }
 
   @override
-  Future onError(Fault err) async {
+  Future onFault(Fault err) async {
     if (error) {
       logPrint('*** Fault ***:');
       logPrint('uri: ${err.request?.uri}');

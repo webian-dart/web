@@ -36,7 +36,7 @@ void main() async {
       if (csrfToken != options?.headers['csrfToken']) {
         options?.headers['csrfToken'] = csrfToken;
         //repeat
-        return web.request(options?.path ?? "", options: options);
+        return web.request(options?.path ?? '', options: options);
       }
       // update token and repeat
       // Lock to block the incoming request until the token updated
@@ -58,7 +58,7 @@ void main() async {
     return error;
   }));
 
-  _onResult(d) {
+  void _onResult(d) {
     print('request ok!');
   }
 

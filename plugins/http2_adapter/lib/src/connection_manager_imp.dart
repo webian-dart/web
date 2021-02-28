@@ -14,17 +14,16 @@ class _ConnectionManager implements ConnectionManager {
   final int _idleTimeout;
 
   /// Saving the reusable connections
-  final _transportsMap = Map<String, _ClientTransportConnectionState>();
+  final _transportsMap = <String, _ClientTransportConnectionState>{};
 
   /// Saving the connecting futures
-  final _connectFutures =
-      Map<String, Future<_ClientTransportConnectionState>>();
+  final _connectFutures = <String, Future<_ClientTransportConnectionState>>{};
 
   bool _closed = false;
   bool _forceClosed = false;
 
   _ConnectionManager({int? idleTimeout, this.onClientCreate})
-      : this._idleTimeout = idleTimeout ?? 1000;
+      : _idleTimeout = idleTimeout ?? 1000;
 
   @override
   Future<ClientTransportConnection> getConnection(
@@ -34,7 +33,7 @@ class _ConnectionManager implements ConnectionManager {
           "Can't establish connection after [ConnectionManager] closed!");
     }
     final uri = options.uri;
-    final domain = "${uri.host}:${uri.port}";
+    final domain = '${uri.host}:${uri.port}';
     var transportState = _transportsMap[domain];
     if (transportState == null) {
       var _initFuture = _connectFutures[domain];
@@ -61,7 +60,7 @@ class _ConnectionManager implements ConnectionManager {
   Future<_ClientTransportConnectionState> _connect(
       RequestOptions options) async {
     final uri = options.uri;
-    final domain = "${uri.host}:${uri.port}";
+    final domain = '${uri.host}:${uri.port}';
     final clientConfig = ClientSetting();
     onClientCreate?.call(uri, clientConfig);
     var socket;
@@ -79,10 +78,10 @@ class _ConnectionManager implements ConnectionManager {
       );
     } on SocketException catch (e) {
       if (e.osError == null) {
-        if (e.message.contains("timed out")) {
+        if (e.message.contains('timed out')) {
           throw Fault(
             request: options,
-            error: "Connecting timed out [${options.connectTimeout}ms]",
+            error: 'Connecting timed out [${options.connectTimeout}ms]',
             type: FaultType.CONNECT_TIMEOUT,
           );
         }
@@ -161,7 +160,7 @@ class _ClientTransportConnectionState {
   void _startTimer(void Function() callback, int duration, int idleTimeout) {
     _timer = Timer(Duration(milliseconds: duration), () {
       if (!isActive) {
-        int interval =
+        final interval =
             DateTime.now().millisecondsSinceEpoch - latestIdleTimeStamp;
         if (interval >= duration) {
           return callback();

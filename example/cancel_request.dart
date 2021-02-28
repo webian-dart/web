@@ -2,20 +2,20 @@ import 'dart:async';
 
 import 'package:web/web.dart';
 
-main() async {
+void main() async {
   var web = Web();
   web.interceptors.add(LogInterceptor());
   // Token can be shared with different requests.
   final token = CancelToken();
   // In one minute, we cancel!
   Timer(Duration(milliseconds: 500), () {
-    token.cancel("cancelled");
+    token.cancel('cancelled');
   });
 
   // The follow three requests with the same token.
-  var url1 = "https://www.google.com";
-  var url2 = "https://www.facebook.com";
-  var url3 = "https://www.google.com";
+  var url1 = 'https://www.google.com';
+  var url2 = 'https://www.facebook.com';
+  var url3 = 'https://www.google.com';
 
   await Future.wait([
     web

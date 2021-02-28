@@ -10,11 +10,11 @@ class CacheInterceptor extends Interceptor {
   @override
   Future onRequest(RequestOptions options) async {
     final response = _cache[options.uri];
-    if (options.extra["refresh"] == true) {
-      print("${options.uri}: force refresh, ignore cache! \n");
+    if (options.extra['refresh'] == true) {
+      print('${options.uri}: force refresh, ignore cache! \n');
       return options;
     } else if (response != null) {
-      print("cache hit: ${options.uri} \n");
+      print('cache hit: ${options.uri} \n');
       return response;
     }
   }
@@ -25,20 +25,20 @@ class CacheInterceptor extends Interceptor {
   }
 
   @override
-  Future onError(Fault e) async {
+  Future onFault(Fault e) async {
     print('onError: $e');
   }
 }
 
-main() async {
+void main() async {
   var web = Web();
-  web.options.baseUrl = "https://google.com";
+  web.options.baseUrl = 'https://google.com';
   web.interceptors
     ..add(CacheInterceptor())
     ..add(LogInterceptor(requestHeader: false, responseHeader: false));
 
-  await web.get("/"); // second request
-  await web.get("/"); // Will hit cache
+  await web.get('/'); // second request
+  await web.get('/'); // Will hit cache
   // Force refresh
-  await web.get("/", options: Options(extra: {'refresh': true}));
+  await web.get('/', options: Options(extra: {'refresh': true}));
 }

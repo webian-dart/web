@@ -79,7 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   print(r.data);
                   _text = r.data?.replaceAll(RegExp(r"\s"), "") ?? "";
                 });
-              }).catchError(print);
+              }).catchError((fault) {
+                print(fault);
+              });
             },
           ),
           ElevatedButton(

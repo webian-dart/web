@@ -15,7 +15,7 @@ class Http2Adapter extends HttpClientAdapter {
   final ConnectionManager _connectionMgr;
 
   Http2Adapter(ConnectionManager? connectionManager)
-      : this._connectionMgr = connectionManager ?? ConnectionManager();
+      : _connectionMgr = connectionManager ?? ConnectionManager();
 
   @override
   Future<ResponseBody> fetch(
@@ -26,10 +26,10 @@ class Http2Adapter extends HttpClientAdapter {
     final transport = await _connectionMgr.getConnection(options);
     final uri = options.uri;
     var path = uri.path;
-    if (uri.query.trim().isNotEmpty) path += ("?" + uri.query);
-    if (!path.startsWith("/")) path = "/" + path;
+    if (uri.query.trim().isNotEmpty) path += ('?' + uri.query);
+    if (!path.startsWith('/')) path = '/' + path;
     var headers = [
-      Header.ascii(':method', options.method ?? ""),
+      Header.ascii(':method', options.method ?? ''),
       Header.ascii(':path', path),
       Header.ascii(':scheme', uri.scheme),
       Header.ascii(':authority', uri.host),
@@ -52,8 +52,8 @@ class Http2Adapter extends HttpClientAdapter {
     });
     // Write outgoing stream
     await requestStream
-        ?.listen((data) => stream.outgoingMessages.add(DataStreamMessage(data)))
-        ?.asFuture();
+        .listen((data) => stream.outgoingMessages.add(DataStreamMessage(data)))
+        .asFuture();
     await stream.outgoingMessages.close();
     var sc = StreamController<Uint8List>();
     final responseHeaders = Headers();
@@ -87,11 +87,11 @@ class Http2Adapter extends HttpClientAdapter {
       cancelOnError: true,
     );
     await completer.future;
-    var status = responseHeaders.value(":status");
-    responseHeaders.removeAll(":status");
+    var status = responseHeaders.value(':status');
+    responseHeaders.removeAll(':status');
     return ResponseBody(
       sc.stream,
-      int.parse(status ?? ""),
+      int.parse(status ?? ''),
       headers: responseHeaders.map,
     );
   }

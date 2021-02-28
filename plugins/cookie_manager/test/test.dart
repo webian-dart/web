@@ -8,10 +8,10 @@ void main() {
     var web = Web();
     var webCookies = WebCookies();
     web.interceptors..add(CookieManager(webCookies))..add(LogInterceptor());
-    await web.get("https://google.com/");
+    await web.get('https://google.com/');
     // Print cookies
-    print(webCookies.loadForRequest(Uri.parse("https://google.com/")));
+    print(webCookies.loadForRequest(Uri.parse('https://google.com/')));
     // second request with the cookie
-    await web.get("https://google.com/");
+    await web.get('https://google.com/');
   });
 }

@@ -7,5 +7,6 @@ class ResponseInterceptor extends Interceptor {
 
   ResponseInterceptor(OnResponse handler) : _onResponse = handler;
 
+  @override
   Future onResponse(Response response) async => _onResponse(response);
 }

@@ -11,8 +11,8 @@ class MyAdapter extends HttpClientAdapter {
       Stream<List<int>> requestStream, Future? cancelFuture) async {
     final uri = options.uri;
     // hook requests to  google.com
-    if (uri.host == "google.com") {
-      return ResponseBody.fromString("Too young too simple!", 200);
+    if (uri.host == 'google.com') {
+      return ResponseBody.fromString('Too young too simple!', 200);
     }
     return _adapter.fetch(options, requestStream, cancelFuture);
   }
@@ -26,8 +26,8 @@ class MyAdapter extends HttpClientAdapter {
 void main() async {
   final web = Web();
   web.httpClientAdapter = MyAdapter();
-  var response = await web.get("https://google.com");
+  var response = await web.get('https://google.com');
   print(response);
-  response = await web.get("https://google.com");
+  response = await web.get('https://google.com');
   print(response);
 }
