@@ -4,9 +4,9 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:web/src/data/map_encoder.dart';
+import 'package:web/src/headers/header_type.dart';
 
 import '../faults/fault.dart';
-import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';
 import '../responses/responses.dart';
@@ -83,7 +83,7 @@ class DefaultTransformer extends Transformer {
     var showDownloadProgress = options.onReceiveProgress != null;
     if (showDownloadProgress) {
       length = -1;
-      int.parse(response.headers[Headers.contentLengthHeader]?.first ?? '-1');
+      int.parse(response.headers[HeaderType.contentLength]?.first ?? '-1');
     }
     var completer = Completer();
     var stream =
@@ -152,7 +152,7 @@ class DefaultTransformer extends Transformer {
     }
     if (responseBody.isNotEmpty &&
         options.responseType == ResponseType.json &&
-        _isJsonMime(response.headers[Headers.contentTypeHeader]?.first)) {
+        _isJsonMime(response.headers[HeaderType.contentType]?.first)) {
       final callback = jsonDecodeCallback;
       if (callback != null) {
         return callback(responseBody);
@@ -166,6 +166,6 @@ class DefaultTransformer extends Transformer {
   bool _isJsonMime(String? contentType) {
     if (contentType == null) return false;
     return MediaType.parse(contentType).mimeType.toLowerCase() ==
-        Headers.jsonMimeType.mimeType;
+        HeaderType.jsonMimeType.mimeType;
   }
 }

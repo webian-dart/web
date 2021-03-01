@@ -12,7 +12,7 @@ void main() async {
       HttpHeaders.userAgentHeader: 'web',
       'api': '1.0.0',
     },
-    contentType: Headers.jsonContentType,
+    contentType: HeaderType.jsonContent,
     // Transform the response data to a String encoded with UTF8.
     // The default value is [ResponseType.JSON].
     responseType: ResponseType.plain,
@@ -37,7 +37,7 @@ void main() async {
     },
     // Send data with 'application/x-www-form-urlencoded' format
     options: Options(
-      contentType: Headers.formUrlEncodedContentType,
+      contentType: HeaderType.formUrlEncodedContent,
     ),
   );
   print(response.data);

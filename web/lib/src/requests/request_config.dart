@@ -1,7 +1,7 @@
 import 'package:web/src/extensions/map_extensions.dart';
+import 'package:web/src/headers/header_type.dart';
 
 import '../../Web.dart';
-import '../headers.dart';
 import 'requests.dart';
 
 /// The [RequestConfig] class describes the http request information and configuration.
@@ -51,10 +51,10 @@ class RequestConfig {
   /// you can set `ContentType.parse('application/x-www-form-urlencoded')`, and [Web]
   /// will automatically encode the request body.
   set contentType(String? contentType) {
-    headers[Headers.contentTypeHeader] = contentType?.trim();
+    headers[HeaderType.contentType] = contentType?.trim();
   }
 
-  String? get contentType => headers[Headers.contentTypeHeader];
+  String? get contentType => headers[HeaderType.contentType];
 
   /// [responseType] indicates the type of data that the server will respond with
   /// options which defined in [ResponseType] are `json`, `stream`, `plain`.

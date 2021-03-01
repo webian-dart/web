@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:web/src/headers.dart';
+import 'package:web/src/headers/headers.dart';
 
 void main() {
   group('Headers Should', () {

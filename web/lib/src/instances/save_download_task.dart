@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:web/src/faults/faults_factory.dart';
+import 'package:web/src/headers/header_type.dart';
 
 import '../faults/fault.dart';
-import '../headers.dart';
+import '../headers/headers.dart';
 import '../requests/cancel_token.dart';
 import '../requests/requests.dart';
 import '../responses/response.dart';
@@ -42,12 +43,11 @@ class SaveDownloadTask {
     var stream = response.data!.stream;
     var compressed = false;
     var total = 0;
-    var contentEncoding =
-        response.headers.valueOf(Headers.contentEncodingHeader);
+    var contentEncoding = response.headers.valueOf(HeaderType.contentEncoding);
     if (contentEncoding != null) {
       compressed = ['gzip', 'deflate', 'compress'].contains(contentEncoding);
     }
-    if (lengthHeader == Headers.contentLengthHeader && compressed) {
+    if (lengthHeader == HeaderType.contentLength && compressed) {
       total = -1;
     } else {
       total = int.parse(response.headers.valueOf(lengthHeader) ?? '-1');

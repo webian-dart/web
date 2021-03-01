@@ -4,7 +4,7 @@ import 'package:web/src/interceptors/interceptors.dart';
 
 import 'client_adapters/http_client_adapter.dart';
 import 'data/transformer.dart';
-import 'headers.dart';
+import 'headers/header_type.dart';
 import 'instances/instance_stub.dart'
     // ignore: uri_does_not_exist
     if (dart.library.html) 'instances/web_for_browser.dart'
@@ -245,7 +245,7 @@ abstract class Web {
     Map<String, dynamic> queryParameters = const {},
     CancelToken? cancelToken,
     bool deleteOnError = true,
-    String lengthHeader = Headers.contentLengthHeader,
+    String lengthHeader = HeaderType.contentLength,
     data,
     Options? options,
   });
@@ -291,7 +291,7 @@ abstract class Web {
     ProgressCallback? onReceiveProgress,
     CancelToken? cancelToken,
     bool deleteOnError = true,
-    String lengthHeader = Headers.contentLengthHeader,
+    String lengthHeader = HeaderType.contentLength,
     data,
     Options? options,
   });

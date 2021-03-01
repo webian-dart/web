@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../headers.dart';
+import '../headers/headers.dart';
 import '../options/request_options.dart';
 import '../requests/redirect_record.dart';
 

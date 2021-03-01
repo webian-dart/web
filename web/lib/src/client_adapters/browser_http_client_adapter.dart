@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
+import 'package:web/src/headers/header_type.dart';
+
 import '../faults/fault.dart';
-import '../headers.dart';
 import '../options/request_options.dart';
 import '../responses/response_body.dart';
 import 'http_client_adapter.dart';
@@ -55,7 +56,7 @@ class BrowserHttpClientAdapter implements HttpClientAdapter {
       ..open(options.method!, options.uri.toString(), async: true)
       ..responseType = 'blob'
       ..withCredentials = options.extra['withCredentials'] ?? withCredentials;
-    options.headers.remove(Headers.contentLengthHeader);
+    options.headers.remove(HeaderType.contentLength);
     options.headers.forEach((key, v) => xhr.setRequestHeader(key, '$v'));
   }
 

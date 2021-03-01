@@ -70,8 +70,8 @@ Future downloadWithChunks(
         .valueOf(HttpHeaders.contentRangeHeader)!
         .split('/')
         .last);
-    final reserved = total -
-        int.parse(response.headers.valueOf(Headers.contentLengthHeader)!);
+    final reserved =
+        total - int.parse(response.headers.valueOf(HeaderType.contentLength)!);
     var chunk = (reserved / firstChunkSize).ceil() + 1;
     if (chunk > 1) {
       var chunkSize = firstChunkSize;

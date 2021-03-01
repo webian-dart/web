@@ -1,3 +1,5 @@
+import 'package:web/src/headers/header_type.dart';
+
 import '../../Web.dart';
 import '../requests/cancel_token.dart';
 
@@ -156,7 +158,7 @@ class RequestOptions extends Options {
       extra: (Map.from(defaultOptions.extra))..addAll(options.extra),
       contentType: options.contentType ??
           defaultOptions.contentType ??
-          Headers.jsonContentType,
+          HeaderType.jsonContent,
       validateStatus: options.validateStatus ??
           defaultOptions.validateStatus ??
           (int? status) {

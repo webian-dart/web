@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:web/src/headers/header_type.dart';
 import 'package:web/src/requests/request.dart';
 
 import '../../web.dart';
 import '../client_adapters/default_http_client_adapter.dart';
 import '../faults/fault.dart';
-import '../headers.dart';
+import '../headers/headers.dart';
 import '../options/options.dart';
 import '../requests/cancel_token.dart';
 import '../requests/requests.dart';
@@ -69,7 +70,7 @@ class WebForNative with WebMixin implements Web {
     Map<String, dynamic> queryParameters = const {},
     CancelToken? cancelToken,
     bool deleteOnError = true,
-    String lengthHeader = Headers.contentLengthHeader,
+    String lengthHeader = HeaderType.contentLength,
     data,
     Options? options,
   }) async {
@@ -175,7 +176,7 @@ class WebForNative with WebMixin implements Web {
     ProgressCallback? onReceiveProgress,
     CancelToken? cancelToken,
     bool deleteOnError = true,
-    lengthHeader = Headers.contentLengthHeader,
+    lengthHeader = HeaderType.contentLength,
     data,
     Options? options,
   }) {

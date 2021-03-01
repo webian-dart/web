@@ -4,6 +4,7 @@ import 'package:web/src/client_adapters/http_client_adapter.dart';
 import 'package:web/src/data/transformer.dart';
 import 'package:web/src/faults/fault.dart';
 import 'package:web/src/faults/faults_factory.dart';
+import 'package:web/src/headers/header_type.dart';
 import 'package:web/src/interceptors/interceptors.dart';
 import 'package:web/src/interceptors/lock.dart';
 import 'package:web/src/options/request_options.dart';
@@ -13,7 +14,7 @@ import 'package:web/src/responses/response.dart';
 import 'package:web/src/responses/response_body.dart';
 import 'package:web/src/responses/responses.dart';
 
-import '../headers.dart';
+import '../headers/headers.dart';
 
 class RequestDispatcher<T> {
   final Interceptors interceptors;
@@ -57,12 +58,12 @@ class RequestDispatcher<T> {
                 options.responseType == ResponseType.stream);
         String? contentType;
         if (forceConvert) {
-          contentType = headers.valueOf(Headers.contentTypeHeader);
-          headers.set(Headers.contentTypeHeader, Headers.jsonContentType);
+          contentType = headers.valueOf(HeaderType.contentType);
+          headers.set(HeaderType.contentType, HeaderType.jsonContent);
         }
         ret.data = await transformer.transformResponse(options, responseBody);
         if (forceConvert) {
-          headers.set(Headers.contentTypeHeader, contentType);
+          headers.set(HeaderType.contentType, contentType);
         }
       } else {
         await responseBody.stream.listen(null).cancel();

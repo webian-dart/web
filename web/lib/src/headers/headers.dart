@@ -1,22 +1,8 @@
-import 'package:http_parser/http_parser.dart';
 import 'package:web/src/extensions/map_extensions.dart';
 
 typedef HeaderForEachCallback = void Function(String name, List<String> values);
 
 class Headers {
-  // Header field name
-  static const acceptHeader = 'accept';
-  static const contentEncodingHeader = 'content-encoding';
-  static const contentLengthHeader = 'content-length';
-  static const contentTypeHeader = 'content-type';
-  static const wwwAuthenticateHeader = 'www-authenticate';
-
-  // Header field value
-  static const jsonContentType = 'application/json; charset=utf-8';
-  static const formUrlEncodedContentType = 'application/x-www-form-urlencoded';
-
-  static final jsonMimeType = MediaType.parse(jsonContentType);
-
   final Map<String, List<String>> _map;
 
   Map<String, List<String>> get map => _map;

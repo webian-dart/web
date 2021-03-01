@@ -9,7 +9,7 @@ Future getHttp() async {
   var response = await web.post('/post',
       data: null,
       options: Options(
-          contentType: Headers.jsonContentType,
+          contentType: HeaderType.jsonContent,
           headers: {'Content-Type': 'application/json'}));
   print(response);
 }

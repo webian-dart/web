@@ -72,7 +72,7 @@ void main() async {
       'info': {'name': 'wendux', 'age': 25}
     },
     options: Options(
-      contentType: Headers.formUrlEncodedContentType,
+      contentType: HeaderType.formUrlEncodedContent,
     ),
   );
   print(response.data);

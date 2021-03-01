@@ -9,7 +9,7 @@ import '../web.dart';
 import 'client_adapters/http_client_adapter.dart';
 import 'data/transformer.dart';
 import 'faults/fault.dart';
-import 'headers.dart';
+import 'headers/header_type.dart';
 import 'options/options.dart';
 import 'requests/cancel_token.dart';
 import 'requests/requests.dart';
@@ -367,7 +367,7 @@ abstract class WebMixin implements Web {
     Map<String, dynamic> queryParameters = const {},
     CancelToken? cancelToken,
     bool deleteOnError = true,
-    String lengthHeader = Headers.contentLengthHeader,
+    String lengthHeader = HeaderType.contentLength,
     data,
     Options? options,
   }) async {
@@ -416,7 +416,7 @@ abstract class WebMixin implements Web {
     ProgressCallback? onReceiveProgress,
     CancelToken? cancelToken,
     bool deleteOnError = true,
-    String lengthHeader = Headers.contentLengthHeader,
+    String lengthHeader = HeaderType.contentLength,
     data,
     Options? options,
   }) {

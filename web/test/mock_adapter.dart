@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:web/adapter.dart';
+import 'package:web/src/headers/header_type.dart';
 import 'package:web/web.dart';
 
 class MockAdapter extends HttpClientAdapter {
@@ -25,7 +26,7 @@ class MockAdapter extends HttpClientAdapter {
             }),
             200,
             headers: {
-              Headers.contentTypeHeader: [Headers.jsonContentType],
+              HeaderType.contentType: [HeaderType.jsonContent],
             },
           );
         case '/test-auth':
@@ -39,7 +40,7 @@ class MockAdapter extends HttpClientAdapter {
                   }),
                   401,
                   headers: {
-                    Headers.contentTypeHeader: [Headers.jsonContentType],
+                    HeaderType.contentType: [HeaderType.jsonContent],
                   },
                 );
               }
@@ -50,7 +51,7 @@ class MockAdapter extends HttpClientAdapter {
                 }),
                 200,
                 headers: {
-                  Headers.contentTypeHeader: [Headers.jsonContentType],
+                  HeaderType.contentType: [HeaderType.jsonContent],
                 },
               );
             });
@@ -61,7 +62,7 @@ class MockAdapter extends HttpClientAdapter {
               File('./README.md').openRead().cast<Uint8List>(),
               200,
               headers: {
-                Headers.contentLengthHeader: [
+                HeaderType.contentLength: [
                   File('./README.md').lengthSync().toString()
                 ],
               },
@@ -78,7 +79,7 @@ class MockAdapter extends HttpClientAdapter {
               })),
               200,
               headers: {
-                Headers.contentTypeHeader: [Headers.jsonContentType],
+                HeaderType.contentType: [HeaderType.jsonContent],
               },
             );
           }

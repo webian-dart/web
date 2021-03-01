@@ -6,9 +6,8 @@ import 'dart:typed_data';
 import 'package:web/src/data/form_data.dart';
 import 'package:web/src/data/transformer.dart';
 import 'package:web/src/faults/fault.dart';
+import 'package:web/src/headers/header_type.dart';
 import 'package:web/src/options/request_options.dart';
-
-import '../headers.dart';
 
 class RequestStreamFactory {
   static Future<Stream<Uint8List>> build(
@@ -25,7 +24,7 @@ class RequestStreamFactory {
             'Stream type must be `Stream<List>`, but ${data.runtimeType} is found.');
         stream = data as Stream<List<int>>;
         options.headers.keys.any((String key) {
-          if (key.toLowerCase() == Headers.contentLengthHeader) {
+          if (key.toLowerCase() == HeaderType.contentLength) {
             length = int.parse(options.headers[key].toString());
             return true;
           }
@@ -33,7 +32,7 @@ class RequestStreamFactory {
         });
       } else if (data is FormData) {
         if (data is FormData) {
-          options.headers[Headers.contentTypeHeader] =
+          options.headers[HeaderType.contentType] =
               'multipart/form-data; boundary=${data.boundary}';
         }
         stream = data.finalize();
@@ -61,7 +60,7 @@ class RequestStreamFactory {
       }
 
       if (length != null) {
-        options.headers[Headers.contentLengthHeader] = length.toString();
+        options.headers[HeaderType.contentLength] = length.toString();
       }
       var complete = 0;
       var byteStream =
@@ -96,7 +95,7 @@ class RequestStreamFactory {
       }
       return byteStream;
     } else {
-      options.headers.remove(Headers.contentTypeHeader);
+      options.headers.remove(HeaderType.contentType);
     }
     return Future.value(Stream.empty());
   }
