@@ -3,7 +3,7 @@ import 'package:web/src/headers/headers.dart';
 
 void main() {
   group('Headers Should', () {
-    test('headers should be iterable', () {
+    test('be iterable', () {
       var headers = Headers.fromMap({
         'set-cookie': ['k=v', 'k1=v1'],
         'content-length': ['200'],
@@ -32,7 +32,12 @@ void main() {
 
       headers.set('content-length', '300');
       expect(headers.valueOf('content-length'), '300');
+    });
 
+    test('set new header value that is an array of values', () {
+      var headers = Headers.fromMap({
+        'content-length': ['200'],
+      });
       headers.set('content-length', ['400']);
       expect(headers.valueOf('content-length'), '400');
     });

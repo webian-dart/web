@@ -34,9 +34,12 @@ class Headers {
   /// Adds a header value. The header named [name] will have the value
   /// [value] added to its list of values.
   void add(String name, String value) {
-    var arr = this[name];
-    if (arr == null) return set(name, value);
-    arr.add(value);
+    var values = this[name];
+    if (values == null) {
+      set(name, value);
+    } else {
+      values.add(value);
+    }
   }
 
   /// Sets a header. The header named [name] will have all its values
