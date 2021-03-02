@@ -15,7 +15,7 @@ void main() {
       'age': 25,
       'file': MultipartFile.fromString('hellow world.'),
       'files': [
-        await MultipartFile.fromFile('../Web/test/_testfile',
+        await MultipartFile.fromFile('../web/test/_testfile',
             filename: '1.txt'),
         MultipartFile.fromFileSync('../web/test/_testfile', filename: '2.txt'),
       ]
@@ -25,9 +25,7 @@ void main() {
     var content = f.readAsStringSync();
     content = content.replaceAll('--Web-boundary-3788753558', fm.boundary);
     var actual = utf8.decode(fmStr, allowMalformed: true);
-    if (!Platform.isWindows) {
-      actual = actual.replaceAll('\r\n', '\n');
-    }
+    actual = actual.replaceAll('\r\n', '\n');
     expect(actual, content);
     expect(fm.readAsBytes(), throwsA(const TypeMatcher<StateError>()));
 
